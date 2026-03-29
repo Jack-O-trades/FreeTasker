@@ -17,15 +17,15 @@ export default function FloatingMessageButton() {
       style={{
         position: 'fixed',
         bottom: 24,
-        right: 96,
+        right: 24,
         borderRadius: 50,
-        padding: '16px 24px',
+        padding: '12px 20px',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
         boxShadow: '0 8px 16px rgba(29, 191, 115, 0.4)',
         zIndex: 9998,
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: 700
       }}
     >

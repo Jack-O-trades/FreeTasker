@@ -31,20 +31,20 @@ export default function BrowsePage() {
       {/* Header */}
       <div className="mb-8" style={{ background: '#022a1b', borderRadius: '16px', color: 'white', display: 'flex', flexDirection: 'column', gap: 24, padding: '48px 40px', marginTop: '24px' }}>
         <h1 style={{ fontSize: 40, color: 'white', margin: 0 }}>Find the perfect freelance service</h1>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: 16, flexWrap: 'wrap', maxWidth: 900 }}>
-          <div style={{ display: 'flex', flex: 1, minWidth: 280, background: 'white', borderRadius: 8, padding: '8px 16px', alignItems: 'center' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: 16, flexWrap: 'wrap', width: '100%', maxWidth: 900 }}>
+          <div style={{ display: 'flex', flex: '1 1 200px', background: 'white', borderRadius: 8, padding: '8px 16px', alignItems: 'center' }}>
             <Search size={20} className="text-muted" />
             <input
-              style={{ flex: 1, border: 'none', padding: '12px', fontSize: 16, outline: 'none', color: '#111827' }}
+              style={{ flex: 1, border: 'none', padding: '12px', fontSize: 16, outline: 'none', color: '#111827', minWidth: 0 }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="What are you looking for?"
             />
           </div>
-          <div style={{ display: 'flex', width: 240, background: 'white', borderRadius: 8, padding: '8px 16px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flex: '1 1 150px', background: 'white', borderRadius: 8, padding: '8px 16px', alignItems: 'center' }}>
             <Filter size={20} className="text-muted" />
             <input
-              style={{ flex: 1, border: 'none', padding: '12px', fontSize: 16, outline: 'none', color: '#111827' }}
+              style={{ flex: 1, border: 'none', padding: '12px', fontSize: 16, outline: 'none', color: '#111827', minWidth: 0 }}
               value={skill}
               onChange={(e) => setSkill(e.target.value)}
               placeholder="Any specific skill?"

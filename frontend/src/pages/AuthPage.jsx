@@ -15,6 +15,7 @@ export default function AuthPage({ mode = 'login' }) {
     username: '',
     first_name: '',
     last_name: '',
+    skills: '',
     role: params.get('role') || 'freelancer',
   });
   const [error, setError] = useState('');
@@ -41,6 +42,11 @@ export default function AuthPage({ mode = 'login' }) {
         redirectByRole(me.data.role);
       } else {
         const payload = { ...form, password2: form.password };
+        if (payload.role === 'freelancer' && payload.skills) {
+          payload.skills = payload.skills.split(',').map(s => s.trim()).filter(Boolean);
+        } else if (payload.role === 'freelancer') {
+          payload.skills = [];
+        }
         await registerApi(payload);
         const loginRes = await loginApi(form.email, form.password);
         localStorage.setItem('access_token', loginRes.data.access);
@@ -117,6 +123,13 @@ export default function AuthPage({ mode = 'login' }) {
                   </div>
                 </div>
               </div>
+              
+              {form.role === 'freelancer' && (
+                <div className="form-group">
+                  <label className="form-label">Key Skills (comma separated)</label>
+                  <input className="form-input" value={form.skills} onChange={(e) => set('skills', e.target.value)} placeholder="React, Python, Design" />
+                </div>
+              )}
             </>
           )}
 

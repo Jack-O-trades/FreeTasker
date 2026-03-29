@@ -41,14 +41,24 @@ export const register = (data) =>
   api.post('/accounts/register/', data);
 export const getMe = () =>
   api.get('/accounts/profile/');
+export const updateProfile = (data) =>
+  api.patch('/accounts/profile/', data);
 
 // ---- Projects ----
 export const getProjects = (params) =>
   api.get('/projects/', { params });
+export const getRecommendedProjects = () =>
+  api.get('/projects/recommended/');
 export const getProject = (id) =>
   api.get(`/projects/${id}/`);
-export const createProject = (data) =>
-  api.post('/projects/create/', data);
+export const createProject = (data) => {
+  if (data instanceof FormData) {
+    return api.post('/projects/create/', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  }
+  return api.post('/projects/create/', data);
+};
 export const updateProject = (id, data) =>
   api.patch(`/projects/${id}/update/`, data);
 export const getMyProjects = () =>

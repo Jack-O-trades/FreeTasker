@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getMyProjects, createProject } from '../api';
 import { useAuth } from '../AuthContext';
-import { PlusCircle, FileText, CheckCircle2, Clock } from 'lucide-react';
+import { PlusCircle, FileText, CheckCircle2, Clock, Wand2, Download } from 'lucide-react';
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -12,6 +12,18 @@ export default function ClientDashboard() {
   const [form, setForm] = useState({ title: '', description: '', budget: '', deadline: '', required_skills: '' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.search.includes('post=1')) {
+      setShowModal(true);
+      navigate('/dashboard', { replace: true });
+    }
+  }, [location.search, navigate]);
 
   useEffect(() => {
     getMyProjects()
@@ -28,10 +40,22 @@ export default function ClientDashboard() {
     setError('');
     try {
       const skills = form.required_skills.split(',').map((s) => s.trim()).filter(Boolean);
-      const res = await createProject({ ...form, budget: Number(form.budget), required_skills: skills });
+      const formData = new FormData();
+      formData.append('title', form.title);
+      formData.append('description', form.description);
+      formData.append('budget', Number(form.budget));
+      formData.append('deadline', form.deadline);
+      formData.append('required_skills', JSON.stringify(skills));
+      
+      if (pdfFile) {
+        formData.append('attached_file', pdfFile);
+      }
+
+      const res = await createProject(formData);
       setProjects([res.data, ...projects]);
       setShowModal(false);
       setForm({ title: '', description: '', budget: '', deadline: '', required_skills: '' });
+      setPdfFile(null);
     } catch (err) {
       const data = err.response?.data;
       setError(typeof data === 'object' ? Object.values(data).flat().join(' ') : 'Failed to create project.');
@@ -41,6 +65,33 @@ export default function ClientDashboard() {
   };
 
   const statusColors = { open: 'success', in_progress: 'info', completed: 'teal', cancelled: 'danger', closed: 'warning' };
+
+  const handleAIGenerate = () => {
+    if (!pdfFile) {
+      alert("Please upload a PDF first!");
+      return;
+    }
+    if (!form.title) {
+      alert("Please enter a Project Title first so the AI knows the focus.");
+      return;
+    }
+    setIsGenerating(true);
+    setTimeout(() => {
+      const mockResult = `**Project Overview:**
+We are looking for an experienced professional to help us execute the requirements detailed in the attached document ("${pdfFile.name}").
+
+**Key Requirements:**
+1. Successfully deliver the primary objective: "${form.title}"
+2. Ensure a high-quality, scalable, and responsive final product.
+3. Adhere strictly to the agreed-upon timeline and project milestones.
+4. Provide full source code, documentation, and a staging environment for review.
+
+Please carefully review the attached PDF for the complete scope of work, technical specifications, and deliverables before submitting your proposal. If you have any clarifying questions regarding the requirements, feel free to reach out. We look forward to working with you!`;
+      
+      setForm(f => ({ ...f, description: mockResult }));
+      setIsGenerating(false);
+    }, 1500);
+  };
 
   return (
     <div className="page container animate-in">
@@ -111,6 +162,11 @@ export default function ClientDashboard() {
                   <span className="text-primary">₹{Number(p.budget).toLocaleString()} Fixed</span>
                   <span>Ends {new Date(p.deadline).toLocaleDateString()}</span>
                   <span>{p.total_bids} Proposals</span>
+                  {p.attached_file && (
+                    <a href={`http://127.0.0.1:8001${p.attached_file}`} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#ef4444' }}>
+                      <Download size={14} /> PDF Attached
+                    </a>
+                  )}
                 </div>
               </div>
               <div className="flex gap-3">
@@ -136,8 +192,25 @@ export default function ClientDashboard() {
                 <input className="form-input" value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="e.g. Build a Responsive Website" required />
               </div>
               <div className="form-group">
-                <label className="form-label">Project Description</label>
-                <textarea className="form-textarea" value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Describe your project, timeline, and goals in detail..." required style={{ minHeight: 120 }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label mb-0">Project Description</label>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: 'var(--accent-teal)', fontWeight: 600 }}>
+                      <FileText size={16} /> 
+                      {pdfFile ? <span style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pdfFile.name}</span> : 'Upload PDF'}
+                      <input type="file" accept=".pdf" style={{ display: 'none' }} onChange={(e) => setPdfFile(e.target.files[0])} />
+                    </label>
+                    <button 
+                      type="button" 
+                      onClick={handleAIGenerate} 
+                      disabled={isGenerating || !pdfFile}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', border: 'none', padding: '4px 12px', borderRadius: 100, cursor: (isGenerating || !pdfFile) ? 'not-allowed' : 'pointer', opacity: (!pdfFile) ? 0.6 : 1 }}
+                    >
+                      <Wand2 size={16} /> {isGenerating ? 'Generating...' : 'AI Generate'}
+                    </button>
+                  </div>
+                </div>
+                <textarea className="form-textarea mt-2" value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Describe your project, timeline, and goals in detail... (Or use the AI Generator!)" required style={{ minHeight: 120 }} />
               </div>
               <div className="grid-2" style={{ gap: 16 }}>
                 <div className="form-group">

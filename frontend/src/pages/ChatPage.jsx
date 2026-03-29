@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getChatRooms, getChatMessages } from '../api';
 import { useAuth } from '../AuthContext';
-import { Send, Search, Bot } from 'lucide-react';
+import { Send, Search, Bot, MessageSquare } from 'lucide-react';
 const WS_BASE = 'ws://127.0.0.1:8001/ws/chat';
 
 export default function ChatPage() {
@@ -93,6 +93,11 @@ export default function ChatPage() {
     return room.client_name || 'Client';
   };
 
+  const getOtherEmail = (room) => {
+    if (user?.role === 'client') return room.freelancer_email || '';
+    return room.client_email || '';
+  };
+
   return (
     <div style={{ padding: '24px', maxWidth: 1400, margin: '0 auto', height: 'calc(100vh - 70px)' }}>
       <div className="chat-container">
@@ -135,6 +140,7 @@ export default function ChatPage() {
 
         {/* Main chat */}
         {activeRoom ? (
+          <>
           <div className="chat-main" style={{ background: '#f9fafb' }}>
             <div className="chat-header" style={{ padding: '20px 24px', background: '#ffffff', borderBottom: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -142,10 +148,10 @@ export default function ChatPage() {
                   {getOtherName(activeRoom).charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: '#111827' }}>{getRoomLabel(activeRoom)}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: '#111827' }}>{getOtherName(activeRoom)}</div>
                   <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: wsStatus === 'connected' ? 'var(--success)' : 'var(--danger)' }} />
-                    {wsStatus === 'connected' ? 'Online' : 'Disconnected'}
+                    {wsStatus === 'connected' ? 'Online' : 'Disconnected'} • <span className="text-teal font-semibold">{getOtherEmail(activeRoom)}</span> • {getRoomLabel(activeRoom)}
                   </div>
                 </div>
               </div>
@@ -194,6 +200,91 @@ export default function ChatPage() {
               </button>
             </div>
           </div>
+          
+          {/* Third Column: Profile Widget */}
+          <div className="chat-profile" style={{ width: 320, borderLeft: '1px solid var(--border)', background: '#ffffff', padding: '32px 24px', overflowY: 'auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--accent-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 32, margin: '0 auto 16px' }}>
+                {getOtherName(activeRoom).charAt(0).toUpperCase()}
+              </div>
+              <h3 style={{ fontSize: 20, marginBottom: 4 }}>{getOtherName(activeRoom)}</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: wsStatus === 'connected' ? 'var(--success)' : 'var(--danger)' }} />
+                {wsStatus === 'connected' ? 'Online Now' : 'Offline'}
+              </p>
+            </div>
+            
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24 }}>
+              <h4 style={{ fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: 0.5, marginBottom: 16 }}>Profile Details</h4>
+              
+              {(() => {
+                const isClient = user?.role === 'client';
+                const pType = isClient ? 'freelancer' : 'client';
+                const data = isClient ? activeRoom.freelancer_profile : activeRoom.client_profile;
+                
+                if (!data) return <p className="text-muted text-sm">Profile incomplete.</p>;
+
+                if (pType === 'freelancer') {
+                  return (
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <div className="text-xs text-muted mb-1">Hourly Rate</div>
+                        <div className="font-semibold text-primary">₹{data.hourly_rate || 0}/hr</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted mb-1">Platform Rating</div>
+                        <div className="font-semibold text-primary" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          ⭐ {data.avg_rating || 'N/A'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted mb-1">Completed Projects</div>
+                        <div className="font-semibold text-primary">{data.completed_projects || 0}</div>
+                      </div>
+                      {data.skills && data.skills.length > 0 && (
+                        <div style={{ marginTop: 8 }}>
+                          <div className="text-xs text-muted mb-2">Key Skills</div>
+                          <div className="flex flex-wrap gap-2">
+                            {data.skills.map(s => <span key={s} className="tag" style={{ background: '#f3f4f6', color: '#4b5563', padding: '4px 10px', borderRadius: 100, fontSize: 12, border: '1px solid var(--border)' }}>{s}</span>)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <div className="text-xs text-muted mb-1">Company Name</div>
+                        <div className="font-semibold text-primary">{data.company_name || 'Individual Client'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted mb-1">Verification Status</div>
+                        {data.is_verified ? (
+                          <span className="badge badge-success">Verified Payment</span>
+                        ) : (
+                          <span className="badge badge-warning">Unverified</span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted mb-1">Client Rating</div>
+                        <div className="font-semibold text-primary" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          ⭐ {data.avg_rating || 'N/A'} <span className="text-xs font-normal text-muted">({data.total_ratings || 0})</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+              })()}
+            </div>
+            
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, marginTop: 24 }}>
+               <h4 style={{ fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: 0.5, marginBottom: 12 }}>Contact & Direct Mail</h4>
+               <p className="text-sm font-semibold" style={{ color: 'var(--accent-teal)', wordBreak: 'break-all' }}>{getOtherEmail(activeRoom)}</p>
+            </div>
+          </div>
+          
+        </>
         ) : (
           <div className="chat-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
             <div className="empty-state" style={{ background: 'transparent', border: 'none' }}>

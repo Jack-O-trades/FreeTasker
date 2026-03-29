@@ -41,7 +41,7 @@ export default function Navbar() {
             {user.role === 'client' && (
               <>
                 <Link to="/dashboard" className={`tour-nav-dashboard ${isActive('/dashboard')}`}>Dashboard</Link>
-                <Link to="/projects/create" className={`tour-post-project ${isActive('/projects/create')}`}>Post a Project</Link>
+                <Link to="/dashboard?post=1" className={`tour-post-project ${isActive('/dashboard?post=1')}`}>Post a Project</Link>
               </>
             )}
             {user.role === 'freelancer' && (

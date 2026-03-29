@@ -45,6 +45,13 @@ export default function ProjectDetailPage() {
     e.preventDefault();
     setSubmitting(true);
     setError('');
+
+    if (Number(bid.amount) < Number(project.budget)) {
+      setError(`Bid amount must be at least ₹${Number(project.budget).toLocaleString()} to match the project budget.`);
+      setSubmitting(false);
+      return;
+    }
+
     try {
       await createBid({ project: id, amount: Number(bid.amount), proposal: bid.proposal });
       setSuccess('Bid submitted successfully!');
@@ -218,7 +225,7 @@ export default function ProjectDetailPage() {
                           <button type="button" key={t} className={`btn btn-sm ${bidTier === t ? 'btn-primary' : 'btn-outline'}`} onClick={() => setBidTier(t)} style={{ flex: 1, textTransform: 'capitalize' }}>{t}</button>
                         ))}
                       </div>
-                      <input className="form-input" type="number" value={bid.amount} onChange={(e) => setBid((b) => ({ ...b, amount: e.target.value }))} placeholder="Bid Amount (₹)" required />
+                      <input className="form-input" type="number" min={project.budget} value={bid.amount} onChange={(e) => setBid((b) => ({ ...b, amount: e.target.value }))} placeholder={`Bid Amount (Min ₹${Number(project.budget).toLocaleString()})`} required />
                       
                       <div style={{ position: 'relative' }}>
                         <textarea className="form-textarea" value={bid.proposal} onChange={(e) => setBid((b) => ({ ...b, proposal: e.target.value }))} placeholder="Cover Letter/Proposal" style={{ minHeight: 120, width: '100%' }} required />

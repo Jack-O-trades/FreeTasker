@@ -2,92 +2,55 @@ import React, { useState, useEffect } from 'react';
 import { Joyride, STATUS } from 'react-joyride';
 import { useAuth } from '../AuthContext';
 import { useLocation } from 'react-router-dom';
-import { Bot } from 'lucide-react';
+import { HelpCircle, Play, Mail, X } from 'lucide-react';
 
 export default function OnboardingTour() {
   const { user } = useAuth();
   const location = useLocation();
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState([]);
-
-  // Client Tour Steps
-  const clientSteps = [
-    {
-      target: 'body',
-      content: 'Welcome to FreeTasker! I am your assistant bot. Let me show you around the Client features.',
-      placement: 'center',
-      disableBeacon: true,
-    },
-    {
-      target: '.tour-post-project',
-      content: 'Click here to post your project. You can define budget, deadlines, and the specific qualifications you need.',
-      placement: 'bottom',
-    },
-    {
-      target: '.tour-nav-browse',
-      content: 'Search and browse through thousands of talented freelancers across the globe.',
-      placement: 'bottom',
-    },
-    {
-      target: '.tour-nav-chat',
-      content: 'Message shortlisted freelancers here to interview them before hiring.',
-      placement: 'bottom',
-    },
-  ];
-
-  // Freelancer Tour Steps
-  const freelancerSteps = [
-    {
-      target: 'body',
-      content: 'Welcome to FreeTasker! I am your onboarding bot. Ready to skyrocket your freelance career?',
-      placement: 'center',
-      disableBeacon: true,
-    },
-    {
-      target: '.tour-nav-browse',
-      content: 'Browse the latest verified projects here. Check budget ranges and deadlines to find your perfect match.',
-      placement: 'bottom',
-    },
-    {
-      target: '.tour-nav-dashboard',
-      content: 'Track your Active Bids, generated earnings, and earned Achievement Badges on your dashboard.',
-      placement: 'bottom',
-    },
-    {
-      target: '.tour-nav-profile',
-      content: 'Upload your portfolio and maintain a high rating to earn the completely new Elite Badges!',
-      placement: 'left',
-    },
-  ];
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
-    
-    // Only run tour once per session for demo purposes, or based on local storage
-    const hasSeenTour = localStorage.getItem(`tour_seen_${user.id}`);
-    
-    if (!hasSeenTour) {
-      if (user.role === 'client') setSteps(clientSteps);
-      else if (user.role === 'freelancer') setSteps(freelancerSteps);
-      
-      // Delay to let UI mount
-      setTimeout(() => setRun(true), 1500);
+    if (!user) {
+      setRun(false);
+      return;
     }
-  }, [user]);
+
+    let isDashboard = location.pathname.includes('/dashboard');
+
+    if (user.role === 'client') {
+      setSteps([
+        { target: 'body', content: 'Welcome to FreeTasker! Let us show you around your Client tools.', placement: 'center' },
+        { target: '.tour-post-project', content: 'Click here to instantly post a new project to our freelancer network.', placement: 'bottom' },
+        { target: '.tour-nav-browse', content: 'Use the Find Work tab to manually search for skilled freelancers.', placement: 'bottom' },
+        { target: '.tour-nav-chat', content: 'All your freelancer interactions and active chats will appear here.', placement: 'bottom' }
+      ]);
+    } else if (user.role === 'freelancer') {
+      setSteps([
+        { target: 'body', content: 'Welcome to FreeTasker! Here is how to succeed as a freelancer.', placement: 'center' },
+        { target: '.tour-nav-dashboard', content: 'Your primary hub! Track your earnings and badges here.', placement: 'bottom' },
+        { target: '.tour-demo-project', content: "Here's a demo project just for you! Review the client's requirements here.", placement: 'top' },
+        { target: '.tour-demo-bid-btn', content: "Click this to practice submitting your first bid safely! You can test the AI Proposal auto-writer inside.", placement: 'top' }
+      ]);
+    }
+
+    const hasSeenTour = localStorage.getItem(`tour_seen_${user.id}`);
+    if (!hasSeenTour) {
+      localStorage.setItem(`tour_seen_${user.id}`, 'true');
+      setTimeout(() => setRun(true), 1200);
+    }
+  }, [user, location.pathname]);
 
   const handleJoyrideCallback = (data) => {
     const { status } = data;
-    const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
-    
-    if (finishedStatuses.includes(status)) {
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       setRun(false);
-      localStorage.setItem(`tour_seen_${user?.id}`, 'true');
     }
   };
 
-  const forceStartTour = () => {
-    if (user?.role === 'client') setSteps(clientSteps);
-    else if (user?.role === 'freelancer') setSteps(freelancerSteps);
+  const startTourManually = () => {
+    setShowHelpMenu(false);
     setRun(true);
   };
 
@@ -98,49 +61,80 @@ export default function OnboardingTour() {
       <Joyride
         steps={steps}
         run={run}
-        continuous={true}
-        showProgress={true}
-        showSkipButton={true}
+        continuous
+        showSkipButton
+        showProgress
+        callback={handleJoyrideCallback}
         styles={{
           options: {
             primaryColor: '#1dbf73',
             zIndex: 10000,
           },
-          tooltipContainer: {
-            textAlign: 'left',
-          },
-          buttonNext: {
-            borderRadius: 4,
-          },
-          buttonBack: {
-            marginRight: 10,
-          }
         }}
-        callback={handleJoyrideCallback}
       />
       
-      {/* Help Bot Trigger */}
-      <button 
-        onClick={forceStartTour}
-        className="btn btn-primary"
-        style={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          borderRadius: 50,
-          width: 56,
-          height: 56,
-          padding: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 8px 16px rgba(29, 191, 115, 0.4)',
-          zIndex: 9999
-        }}
-        title="Help & Tour"
-      >
-        <Bot size={28} />
-      </button>
+      <div style={{ position: 'fixed', bottom: 24, right: 165, zIndex: 9999 }}>
+        {showHelpMenu && (
+          <div style={{
+            position: 'absolute',
+            bottom: '60px',
+            right: 0,
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+            padding: '16px',
+            width: '240px',
+            border: '1px solid #e5e7eb',
+            animation: 'fadeIn 0.2s ease-out'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <h4 style={{ margin: 0, fontSize: 16 }}>Help Center</h4>
+              <button 
+                onClick={() => setShowHelpMenu(false)}
+                style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <button 
+              onClick={startTourManually}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, textAlign: 'left', marginBottom: 8, color: '#111827', cursor: 'pointer' }}
+            >
+              <Play size={16} color="#1dbf73" />
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Want to know about our website</span>
+            </button>
+            
+            <button 
+              onClick={() => { setShowHelpMenu(false); alert("Please contact support at support@freetasker.com"); }}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, textAlign: 'left', color: '#111827', cursor: 'pointer' }}
+            >
+              <Mail size={16} color="#4f46e5" />
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Contact for help</span>
+            </button>
+          </div>
+        )}
+
+        <button 
+          onClick={() => setShowHelpMenu(!showHelpMenu)}
+          style={{
+            background: '#ffffff',
+            color: '#111827',
+            border: '1px solid #e5e7eb',
+            borderRadius: 30,
+            padding: '12px 20px',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: 14
+          }}
+        >
+          <HelpCircle size={18} color="#1dbf73" /> Help
+        </button>
+      </div>
     </>
   );
 }
