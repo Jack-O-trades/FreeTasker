@@ -43,6 +43,12 @@ class Project(models.Model):
         blank=True,
         related_name='assigned_projects',
     )
+    attached_file = models.FileField(
+        upload_to='project_files/', 
+        null=True, 
+        blank=True,
+        help_text='Optional PDF or document detailing project requirements'
+    )
     total_bids = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

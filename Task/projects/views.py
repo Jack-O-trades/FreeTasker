@@ -110,3 +110,36 @@ class ProjectUpdateView(generics.UpdateAPIView):
         combined = f"{project.title} {project.description}"
         _check_and_log_profanity(self.request.user, combined, context_id=project.id)
 
+
+class RecommendedProjectsView(generics.ListAPIView):
+    """
+    List open projects computationally sorted by overlap with freelancer's skills.
+    GET /api/projects/recommended/
+    """
+    serializer_class = ProjectListSerializer
+    permission_classes = [permissions.IsAuthenticated, IsFreelancer]
+
+    def list(self, request, *args, **kwargs):
+        user = request.user
+        try:
+            my_skills = set(s.lower().strip() for s in user.freelancer_profile.skills)
+        except Exception:
+            my_skills = set()
+
+        projects = Project.objects.filter(status=Project.Status.OPEN).select_related('client')
+        
+        scored_projects = []
+        for p in projects:
+            req_skills = set(s.lower().strip() for s in (p.required_skills or []))
+            overlap = len(my_skills.intersection(req_skills))
+            scored_projects.append((overlap, p.created_at, p))
+            
+        # Sort descending by overlap count, then descending by created_at
+        scored_projects.sort(key=lambda x: (x[0], x[1]), reverse=True)
+        
+        # We return all projects, but strongly guarantee matched projects are at the top.
+        sorted_projects = [sp[2] for sp in scored_projects]
+        
+        serializer = self.get_serializer(sorted_projects, many=True)
+        return Response(serializer.data)
+

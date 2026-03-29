@@ -88,6 +88,29 @@ class BidStatusUpdateView(APIView):
         bid.status = new_status
         bid.save(update_fields=['status', 'updated_at'])
 
+        # Auto-create Chat Room on Shortlist
+        if new_status == 'shortlisted':
+            from chat.models import ChatRoom
+            ChatRoom.objects.get_or_create(
+                project=bid.project,
+                client=request.user,
+                freelancer=bid.freelancer
+            )
+
+        # Dispatch Email Notification
+        from django.core.mail import send_mail
+        from django.conf import settings
+        try:
+            send_mail(
+                subject=f"Update on your bid: '{bid.project.title}'",
+                message=f"Hi {bid.freelancer.first_name or 'there'},\n\nThe client has updated your bid status to '{new_status}' for the project '{bid.project.title}'.\n\n- The FreeTasker Team",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[bid.freelancer.email],
+                fail_silently=True,
+            )
+        except Exception:
+            pass
+
         return Response({
             'message': f'Bid status updated to {new_status}.',
             'bid': BidSerializer(bid).data,

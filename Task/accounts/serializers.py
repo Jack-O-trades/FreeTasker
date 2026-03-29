@@ -15,12 +15,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         write_only=True, validators=[validate_password]
     )
     password2 = serializers.CharField(write_only=True)
+    skills = serializers.ListField(
+        child=serializers.CharField(), required=False, write_only=True
+    )
 
     class Meta:
         model = User
         fields = [
             'email', 'username', 'password', 'password2',
-            'role', 'first_name', 'last_name', 'phone',
+            'role', 'first_name', 'last_name', 'phone', 'skills',
         ]
 
     def validate(self, attrs):
@@ -36,6 +39,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')
+        skills = validated_data.pop('skills', [])
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
@@ -43,7 +47,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Create corresponding profile
         if user.role == User.Role.FREELANCER:
-            FreelancerProfile.objects.create(user=user)
+            FreelancerProfile.objects.create(user=user, skills=skills)
         elif user.role == User.Role.CLIENT:
             ClientProfile.objects.create(user=user)
 

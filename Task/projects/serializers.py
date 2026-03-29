@@ -18,7 +18,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'title', 'description', 'budget', 'deadline',
             'required_skills', 'status', 'is_verified',
             'assigned_freelancer', 'total_bids',
-            'created_at', 'updated_at',
+            'attached_file', 'created_at', 'updated_at',
         ]
         read_only_fields = [
             'id', 'client', 'client_email', 'client_company',
@@ -74,5 +74,5 @@ class ProjectListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'budget', 'deadline',
             'required_skills', 'status', 'is_verified',
-            'total_bids', 'client_email', 'created_at',
+            'total_bids', 'client_email', 'attached_file', 'created_at',
         ]

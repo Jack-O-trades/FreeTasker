@@ -25,6 +25,10 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     client_email = serializers.CharField(source='client.email', read_only=True)
     freelancer_email = serializers.CharField(source='freelancer.email', read_only=True)
+    client_name = serializers.CharField(source='client.username', read_only=True)
+    freelancer_name = serializers.CharField(source='freelancer.username', read_only=True)
+    client_profile = serializers.SerializerMethodField()
+    freelancer_profile = serializers.SerializerMethodField()
     project_title = serializers.CharField(source='project.title', read_only=True)
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
@@ -33,8 +37,8 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         model = ChatRoom
         fields = [
             'id', 'project', 'project_title',
-            'client', 'client_email',
-            'freelancer', 'freelancer_email',
+            'client', 'client_email', 'client_name', 'client_profile',
+            'freelancer', 'freelancer_email', 'freelancer_name', 'freelancer_profile',
             'is_active', 'last_message', 'unread_count',
             'created_at',
         ]
@@ -52,3 +56,27 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             user = user.user
             return obj.messages.filter(is_read=False).exclude(sender=user).count()
         return 0
+
+    def get_client_profile(self, obj):
+        try:
+            prof = obj.client.client_profile
+            return {
+                "is_verified": prof.is_verified,
+                "avg_rating": prof.avg_rating,
+                "total_ratings": prof.total_ratings,
+                "company_name": prof.company_name
+            }
+        except Exception:
+            return None
+
+    def get_freelancer_profile(self, obj):
+        try:
+            prof = obj.freelancer.freelancer_profile
+            return {
+                "skills": prof.skills,
+                "hourly_rate": prof.hourly_rate,
+                "avg_rating": prof.avg_rating,
+                "completed_projects": prof.completed_projects
+            }
+        except Exception:
+            return None
