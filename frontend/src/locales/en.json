@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "post_project": "Post a Project",
+    "find_work": "Find Work",
+    "find_talent": "Find Talent",
+    "admin_panel": "Admin Panel",
+    "messages": "Messages",
+    "search_placeholder": "What service are you looking for?",
+    "logout": "Log out",
+    "signin": "Sign In",
+    "join": "Join"
+  },
+  "landing": {
+    "hero_title": "Find the perfect <1>freelance</1> services for your business",
+    "hero_subtitle": "Millions of people use FreeTasker to turn their ideas into reality. Discover top talent safely and securely.",
+    "search_placeholder": "Try 'building a React application'",
+    "search_btn": "Search",
+    "popular": "Popular:",
+    "trusted_by": "Trusted by:",
+    "explore_marketplace": "Explore the marketplace",
+    "categories": {
+      "tech": "Programming & Tech",
+      "design": "Graphics & Design",
+      "writing": "Writing & Translation",
+      "marketing": "Digital Marketing",
+      "video": "Video & Animation",
+      "music": "Music & Audio",
+      "business": "Business",
+      "data": "Data"
+    },
+    "features_title": "A whole world of freelance talent at your fingertips",
+    "feature1_title": "The best for every budget",
+    "feature1_desc": "Find high-quality services at every price point. No hourly rates, just project-based pricing.",
+    "feature2_title": "Quality work done quickly",
+    "feature2_desc": "Find the right freelancer to begin working on your project within minutes.",
+    "feature3_title": "Protected payments, every time",
+    "feature3_desc": "Always know what you'll pay upfront. Your payment isn't released until you approve the work.",
+    "cta_title": "Find the talent needed to get your business growing.",
+    "cta_btn": "Get Started"
+  },
+  "tour": {
+    "client_step1": "Welcome to FreeTasker! Let us show you around your Client tools.",
+    "client_step2": "Click here to instantly post a new project to our freelancer network.",
+    "client_step3": "Your primary hub! Track all your open, active, and completed projects here.",
+    "client_step4": "All your freelancer interactions and active chats will appear here.",
+    "freelancer_step1": "Welcome to FreeTasker! Here is how to succeed as a freelancer.",
+    "freelancer_step2": "Your primary hub! Track your earnings and badges here.",
+    "freelancer_step3": "Use the Find Work tab to manually search for open projects and submit proposals.",
+    "freelancer_step4": "Communicate with clients safely through our real-time messaging."
+  }
+}

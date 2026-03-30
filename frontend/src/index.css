@@ -44,6 +44,24 @@
   --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+[data-theme='dark'] {
+  --bg-primary: #111827;
+  --bg-secondary: #0f172a;
+  --bg-card: #1f2937;
+  --bg-card-hover: #374151;
+  --bg-input: #1f2937;
+
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border: #374151;
+  --border-active: #1dbf73;
+
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-float: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -72,7 +90,7 @@ input, textarea, select { font-family: inherit; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
 /* ---------- Typography ---------- */
-h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; color: #111827; line-height: 1.25; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--text-primary); line-height: 1.25; }
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -117,18 +135,18 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
 
 /* For Auth/Modals to float cleanly above background */
 .card-glass {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-float);
 }
 
 /* ---------- Form Elements ---------- */
 .form-group { display: flex; flex-direction: column; gap: 8px; }
-.form-label { font-size: 14px; font-weight: 600; color: #374151; }
+.form-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 .form-input, .form-textarea, .form-select {
   background: var(--bg-input);
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   color: var(--text-primary);
@@ -191,7 +209,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #ffffff;
+  background: var(--bg-primary);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
   height: 70px;
@@ -204,7 +222,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
   font-family: 'Outfit', sans-serif;
   font-size: 24px;
   font-weight: 800;
-  color: #111827;
+  color: var(--text-primary);
   letter-spacing: -0.5px;
 }
 .navbar-brand span { color: var(--accent-teal); }
@@ -222,7 +240,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
 /* ---------- Page Layout ---------- */
 .page { min-height: calc(100vh - 70px); padding: 40px 24px; max-width: 1200px; margin: 0 auto; }
 .page-header { margin-bottom: 32px; }
-.page-title { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #111827; }
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: var(--text-primary); }
 .page-subtitle { color: var(--text-secondary); font-size: 16px; }
 
 /* ---------- Grid ---------- */
@@ -257,7 +275,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
 .text-xs { font-size: 11px; }
 .text-muted { color: var(--text-muted); }
 .text-teal { color: var(--accent-teal); }
-.text-primary { color: #111827; }
+.text-primary { color: var(--text-primary); }
 .text-danger { color: var(--danger); }
 .text-success { color: var(--success); }
 .font-bold { font-weight: 700; }
@@ -275,7 +293,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
   gap: 8px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
-.stat-value { font-size: 36px; font-weight: 800; font-family: 'Outfit', sans-serif; color: #111827; }
+.stat-value { font-size: 36px; font-weight: 800; font-family: 'Outfit', sans-serif; color: var(--text-primary); }
 .stat-label { font-size: 14px; color: var(--text-secondary); font-weight: 600; }
 
 /* ---------- Loading Spinner ---------- */
