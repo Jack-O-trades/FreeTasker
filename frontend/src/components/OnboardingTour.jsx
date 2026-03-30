@@ -23,15 +23,15 @@ export default function OnboardingTour() {
       setSteps([
         { target: 'body', content: 'Welcome to FreeTasker! Let us show you around your Client tools.', placement: 'center' },
         { target: '.tour-post-project', content: 'Click here to instantly post a new project to our freelancer network.', placement: 'bottom' },
-        { target: '.tour-nav-browse', content: 'Use the Find Work tab to manually search for skilled freelancers.', placement: 'bottom' },
+        { target: '.tour-nav-dashboard', content: 'Your primary hub! Track all your open, active, and completed projects here.', placement: 'bottom' },
         { target: '.tour-nav-chat', content: 'All your freelancer interactions and active chats will appear here.', placement: 'bottom' }
       ]);
     } else if (user.role === 'freelancer') {
       setSteps([
         { target: 'body', content: 'Welcome to FreeTasker! Here is how to succeed as a freelancer.', placement: 'center' },
         { target: '.tour-nav-dashboard', content: 'Your primary hub! Track your earnings and badges here.', placement: 'bottom' },
-        { target: '.tour-demo-project', content: "Here's a demo project just for you! Review the client's requirements here.", placement: 'top' },
-        { target: '.tour-demo-bid-btn', content: "Click this to practice submitting your first bid safely! You can test the AI Proposal auto-writer inside.", placement: 'top' }
+        { target: '.tour-nav-browse', content: 'Use the Find Work tab to manually search for open projects and submit proposals.', placement: 'bottom' },
+        { target: '.tour-nav-chat', content: 'Communicate with clients safely through our real-time messaging.', placement: 'bottom' }
       ]);
     }
 

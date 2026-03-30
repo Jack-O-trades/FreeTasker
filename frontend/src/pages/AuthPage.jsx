@@ -44,7 +44,7 @@ export default function AuthPage({ mode = 'login' }) {
         const payload = { ...form, password2: form.password };
         if (payload.role === 'freelancer' && payload.skills) {
           payload.skills = payload.skills.split(',').map(s => s.trim()).filter(Boolean);
-        } else if (payload.role === 'freelancer') {
+        } else {
           payload.skills = [];
         }
         await registerApi(payload);
