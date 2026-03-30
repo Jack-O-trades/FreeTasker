@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../AuthContext';
 import { MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+  
 export default function FloatingMessageButton() {
   const { user } = useAuth();
   const navigate = useNavigate();

@@ -8,3 +8,7 @@ channels-redis>=4.1
 daphne>=4.0
 redis>=5.0
 Pillow>=10.0
+dj-database-url>=2.1
+whitenoise>=6.6
+gunicorn>=21.2
+psycopg2-binary>=2.9.0
