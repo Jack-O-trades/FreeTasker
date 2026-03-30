@@ -16,14 +16,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Validate access
         if not self.user or not self.user.is_authenticated:
+            print(f"WebSocket auth failed: user={self.user}, authenticated={getattr(self.user, 'is_authenticated', False)}")
             await self.close()
             return
 
         has_access = await self.check_room_access()
         if not has_access:
+            print(f"WebSocket room access denied for user {self.user.id} and room {self.room_id}")
             await self.close()
             return
 
+        print(f"WebSocket connected: user={self.user.id}, room={self.room_id}")
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -38,51 +41,69 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        data = json.loads(text_data)
-        message_content = data.get('message', '').strip()
+        try:
+            data = json.loads(text_data)
+            message_content = data.get('message', '').strip()
 
-        if not message_content:
-            return
+            if not message_content:
+                await self.send(text_data=json.dumps({
+                    'type': 'error',
+                    'message': 'Message cannot be empty.',
+                }))
+                return
 
-        # Check for spam (rate limiting handled by middleware for HTTP)
-        is_spam = await self.check_spam(message_content)
-        if is_spam:
+            # Check for spam (rate limiting handled by middleware for HTTP)
+            is_spam = await self.check_spam(message_content)
+            if is_spam:
+                await self.send(text_data=json.dumps({
+                    'type': 'error',
+                    'message': 'Message detected as spam. Please wait before sending again.',
+                }))
+                return
+
+            # ---- Profanity Bot: scan message ----
+            has_profanity, found_words = self.scan_profanity(message_content)
+            if has_profanity:
+                # Log to DB for admin review (non-blocking)
+                await self.log_profanity_report(message_content, found_words)
+                # Warn the sender via WebSocket (message still goes through)
+                await self.send(text_data=json.dumps({
+                    'type': 'warning',
+                    'message': (
+                        '⚠️ Your message contains inappropriate language and has been flagged for admin review.'
+                    ),
+                }))
+
+            # Save message to database
+            message = await self.save_message(message_content)
+
+            # Broadcast to room
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message_content,
+                    'sender_id': self.user.id,
+                    'sender_email': self.user.email,
+                    'sender_name': self.user.get_full_name() or self.user.username,
+                    'message_id': message.id,
+                    'timestamp': str(message.created_at),
+                    'flagged': has_profanity,
+                },
+            )
+        except json.JSONDecodeError:
             await self.send(text_data=json.dumps({
                 'type': 'error',
-                'message': 'Message detected as spam. Please wait before sending again.',
+                'message': 'Invalid message format.',
             }))
-            return
-
-        # ---- Profanity Bot: scan message ----
-        has_profanity, found_words = self.scan_profanity(message_content)
-        if has_profanity:
-            # Log to DB for admin review (non-blocking)
-            await self.log_profanity_report(message_content, found_words)
-            # Warn the sender via WebSocket (message still goes through)
+        except Exception as e:
+            import traceback
+            print(f"Error in receive: {str(e)}")
+            traceback.print_exc()
             await self.send(text_data=json.dumps({
-                'type': 'warning',
-                'message': (
-                    '⚠️ Your message contains inappropriate language and has been flagged for admin review.'
-                ),
+                'type': 'error',
+                'message': f'Server error: {str(e)}',
             }))
-
-        # Save message to database
-        message = await self.save_message(message_content)
-
-        # Broadcast to room
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message_content,
-                'sender_id': self.user.id,
-                'sender_email': self.user.email,
-                'sender_name': self.user.get_full_name() or self.user.username,
-                'message_id': message.id,
-                'timestamp': str(message.created_at),
-                'flagged': has_profanity,
-            },
-        )
 
     async def chat_message(self, event):
         """Send message to WebSocket."""

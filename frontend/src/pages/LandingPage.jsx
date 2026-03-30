@@ -51,34 +51,34 @@ export default function LandingPage() {
       </section>
 
       {/* Trusted By Banner */}
-      <section style={{ padding: '24px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
-        <div className="container flex justify-center items-center gap-8 flex-wrap" style={{ opacity: 0.6 }}>
-          <span className="font-bold text-lg text-muted">{t('landing.trusted_by')}</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1 }}>Google</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1 }}>Meta</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1 }}>Netflix</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1 }}>P&G</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1 }}>PayPal</span>
+      <section style={{ padding: '24px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', overflowX: 'auto' }}>
+        <div className="flex justify-center items-center gap-8 flex-wrap" style={{ opacity: 0.6, minWidth: 'max-content', paddingX: 24 }}>
+          <span className="font-bold text-muted text-lg" style={{ whiteSpace: 'nowrap' }}>{t('landing.trusted_by')}</span>
+          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>Google</span>
+          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>Meta</span>
+          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>Netflix</span>
+          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>P&G</span>
+          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>PayPal</span>
         </div>
       </section>
 
       {/* Categories */}
-      <section style={{ padding: '80px 24px' }}>
-        <div className="container">
-          <h2 className="mb-8 text-dark-theme" style={{ fontSize: 32 }}>{t('landing.explore_marketplace')}</h2>
-          <div className="grid-4">
-            {categories.map((c) => (
-              <div key={c.name} className="card text-center hover:shadow-card cursor-pointer" style={{ padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <div style={{ fontSize: 40 }}>{c.icon}</div>
-                <h3 className="text-dark-theme" style={{ fontSize: 16, fontWeight: 600 }}>{c.name}</h3>
-              </div>
-            ))}
-          </div>
+      <section style={{ padding: '60px 24px' }} className="page">
+        <div style={{ marginBottom: 32 }}>
+          <h2 className="text-dark-theme" style={{ fontSize: 32 }}>{t('landing.explore_marketplace')}</h2>
+        </div>
+        <div className="grid-4">
+          {categories.map((c) => (
+            <div key={c.name} className="card text-center hover:shadow-card cursor-pointer" style={{ padding: '32px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 40 }}>{c.icon}</div>
+              <h3 className="text-dark-theme" style={{ fontSize: 16, fontWeight: 600 }}>{c.name}</h3>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Features */}
-      <section style={{ padding: '80px 24px', background: 'var(--bg-secondary)' }}>
+      <section style={{ padding: '60px 24px', background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="grid-2" style={{ alignItems: 'center', gap: 48 }}>
             <div>

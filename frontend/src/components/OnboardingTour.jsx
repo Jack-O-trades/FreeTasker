@@ -12,6 +12,9 @@ export default function OnboardingTour() {
   const [run, setRun] = useState(false);
   const [steps, setSteps] = useState([]);
   const [showHelpMenu, setShowHelpMenu] = useState(false);
+  
+  // Check if on chat page - help button should be hidden there
+  const isOnChatPage = location.pathname.startsWith('/chat');
 
   useEffect(() => {
     if (!user) {
@@ -56,6 +59,27 @@ export default function OnboardingTour() {
   };
 
   if (!user) return null;
+  
+  // Hide help button on chat page to prevent overlapping with chat interface
+  if (isOnChatPage) return (
+    <Joyride
+      steps={steps}
+      run={run}
+      continuous
+      showSkipButton
+      showProgress
+      callback={handleJoyrideCallback}
+      styles={{
+        options: {
+          primaryColor: '#1dbf73',
+          backgroundColor: 'var(--bg-card)',
+          textColor: 'var(--text-primary)',
+          arrowColor: 'var(--bg-card)',
+          zIndex: 10000,
+        },
+      }}
+    />
+  );
 
   return (
     <>
@@ -77,12 +101,12 @@ export default function OnboardingTour() {
         }}
       />
       
-      <div style={{ position: 'fixed', bottom: 24, right: 165, zIndex: 9999 }}>
+      <div style={{ position: 'fixed', bottom: 24, left: 24, zIndex: 9999 }}>
         {showHelpMenu && (
           <div style={{
             position: 'absolute',
             bottom: '60px',
-            right: 0,
+            left: 0,
             background: 'var(--bg-card)',
             color: 'var(--text-primary)',
             borderRadius: '12px',

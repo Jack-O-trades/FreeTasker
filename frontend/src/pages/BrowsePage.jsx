@@ -46,10 +46,10 @@ export default function BrowsePage() {
   return (
     <div className="page" style={{ maxWidth: 1400 }}>
       {/* Header */}
-      <div className="hero mb-8 flex-col gap-4" style={{ marginTop: '24px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+      <div className="hero mb-8 flex-col gap-4" style={{ marginTop: '24px', background: 'var(--bg-card)', border: '1px solid var(--border)', minHeight: 'auto', padding: '32px 24px', flexDirection: 'column' }}>
         <h1 className="text-dark-theme" style={{ fontSize: 40, margin: 0 }}>{t('browse.hero_title')}</h1>
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: 16, flexWrap: 'wrap', width: '100%', maxWidth: 900 }}>
-          <div style={{ display: 'flex', flex: '1 1 200px', background: 'var(--bg-secondary)', borderRadius: 8, padding: '8px 16px', alignItems: 'center', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flex: '1 1 200px', background: 'var(--bg-secondary)', borderRadius: 8, padding: '8px 16px', alignItems: 'center', border: '1px solid var(--border)', minWidth: 0 }}>
             <Search size={20} className="text-muted" />
             <input
               style={{ flex: 1, border: 'none', padding: '12px', fontSize: 16, outline: 'none', color: 'var(--text-primary)', background: 'transparent', minWidth: 0 }}
@@ -58,7 +58,7 @@ export default function BrowsePage() {
               placeholder={t('browse.search_placeholder')}
             />
           </div>
-          <div style={{ display: 'flex', flex: '1 1 150px', background: 'var(--bg-secondary)', borderRadius: 8, padding: '8px 16px', alignItems: 'center', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flex: '1 1 150px', background: 'var(--bg-secondary)', borderRadius: 8, padding: '8px 16px', alignItems: 'center', border: '1px solid var(--border)', minWidth: 0 }}>
             <Filter size={20} className="text-muted" />
             <input
               style={{ flex: 1, border: 'none', padding: '12px', fontSize: 16, outline: 'none', color: 'var(--text-primary)', background: 'transparent', minWidth: 0 }}
@@ -68,13 +68,13 @@ export default function BrowsePage() {
               placeholder={t('browse.skill_placeholder')}
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ padding: '0 32px', fontSize: 16, borderRadius: 8, fontWeight: 700 }}>{t('browse.search_btn')}</button>
+          <button type="submit" className="btn btn-primary" style={{ padding: '8px 32px', fontSize: 16, borderRadius: 8, fontWeight: 700 }}>{t('browse.search_btn')}</button>
         </form>
       </div>
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start' }}>
         {/* Sidebar Filters */}
-        <aside style={{ width: 260, flexShrink: 0 }} className="hidden-mobile">
+        <aside style={{ width: 260, flexShrink: 0 }} className="browse-sidebar">
           <div className="mb-6 flex justify-between items-center">
             <h3 className="text-dark-theme" style={{ fontSize: 18, fontWeight: 700 }}>{t('browse.filters')}</h3>
             <SlidersHorizontal size={18} className="text-muted" />
@@ -97,7 +97,7 @@ export default function BrowsePage() {
                   <input type="number" className="form-input" placeholder={t('browse.max')} style={{ padding: '6px 10px' }} value={maxBudget} onChange={(e) => setMaxBudget(e.target.value)} onKeyDown={handleKeyDown} />
                 </div>
               </div>
-              <div className="divider" style={{ margin: '16px 0' }} />
+              <div className="divider" style={{ margin: '16px 0' }}
               <div className="mb-6">
                 <h4 className="font-semibold mb-3 text-dark-theme">{t('browse.client_history')}</h4>
                 <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> {t('browse.ten_hires')}</label>

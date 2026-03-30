@@ -97,12 +97,12 @@ Please carefully review the attached PDF for the complete scope of work, technic
 
   return (
     <div className="page container animate-in">
-      <div className="page-header flex justify-between items-center bg-white-theme p-8 rounded-lg shadow-sm mb-8" style={{ padding: '32px 40px', border: '1px solid var(--border)' }}>
+      <div className="page-header flex justify-between items-center bg-white-theme p-8 rounded-lg shadow-sm mb-8" style={{ padding: '32px 40px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <div>
           <h1 className="page-title">{t('dashboard.welcome', { name: user?.first_name || user?.username })}</h1>
           <p className="page-subtitle">{t('dashboard.subtitle')}</p>
         </div>
-        <button className="btn btn-primary btn-lg" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary btn-lg" onClick={() => setShowModal(true)} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
           <PlusCircle size={18} /> {t('dashboard.post_project')}
         </button>
       </div>

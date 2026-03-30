@@ -58,30 +58,60 @@ export default function ChatPage() {
   const connectWs = (roomId) => {
     ws.current?.close();
     const token = localStorage.getItem('access_token');
-    const socket = new WebSocket(`${WS_BASE}/${roomId}/?token=${token}`);
+    const wsUrl = `${WS_BASE}/${roomId}/?token=${token}`;
+    console.log('Connecting WebSocket to:', wsUrl);
+    const socket = new WebSocket(wsUrl);
     ws.current = socket;
 
-    socket.onopen = () => setWsStatus('connected');
-    socket.onclose = () => setWsStatus('disconnected');
-    socket.onerror = () => setWsStatus('error');
+    socket.onopen = () => {
+      console.log('WebSocket connected');
+      setWsStatus('connected');
+    };
+    socket.onclose = (event) => {
+      console.log('WebSocket disconnected:', event.code, event.reason);
+      setWsStatus('disconnected');
+    };
+    socket.onerror = (event) => {
+      console.error('WebSocket error:', event);
+      setWsStatus('error');
+      setWarn('Connection error: Unable to connect to chat server');
+    };
     socket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === 'message') {
-        setMessages((prev) => [...prev, data]);
-      } else if (data.type === 'warning') {
-        setWarn(data.message);
-        setTimeout(() => setWarn(''), 5000);
-      } else if (data.type === 'error') {
-        setWarn(data.message);
-        setTimeout(() => setWarn(''), 5000);
+      try {
+        const data = JSON.parse(e.data);
+        console.log('Received message:', data);
+        if (data.type === 'message') {
+          setMessages((prev) => [...prev, data]);
+        } else if (data.type === 'warning') {
+          setWarn(data.message);
+          setTimeout(() => setWarn(''), 5000);
+        } else if (data.type === 'error') {
+          setWarn(data.message);
+          setTimeout(() => setWarn(''), 5000);
+        }
+      } catch (err) {
+        console.error('Error parsing message:', err);
       }
     };
   };
 
   const sendMessage = () => {
-    if (!input.trim() || !ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+    if (!input.trim()) {
+      setWarn('Message cannot be empty');
+      return;
+    }
+    if (!ws.current) {
+      setWarn('WebSocket connection not established');
+      return;
+    }
+    if (ws.current.readyState !== WebSocket.OPEN) {
+      setWarn(`Cannot send message. Connection status: ${ws.current.readyState === WebSocket.CONNECTING ? 'connecting' : ws.current.readyState === WebSocket.CLOSING ? 'closing' : 'closed'}`);
+      return;
+    }
+    console.log('Sending message:', input.trim());
     ws.current.send(JSON.stringify({ message: input.trim() }));
     setInput('');
+    setWarn('');
   };
 
   const handleKeyDown = (e) => {
