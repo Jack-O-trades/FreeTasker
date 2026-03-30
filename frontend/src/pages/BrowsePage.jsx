@@ -11,15 +11,24 @@ export default function BrowsePage() {
   const [search, setSearch] = useState('');
   const [skill, setSkill] = useState('');
 
+  const [minBudget, setMinBudget] = useState('');
+  const [maxBudget, setMaxBudget] = useState('');
+  const [sort, setSort] = useState('recommended');
+
   const fetchProjects = () => {
     setLoading(true);
-    getProjects({ search, skill, status: 'open' })
+    const params = { search, skill, status: 'open' };
+    if (minBudget) params.min_budget = minBudget;
+    if (maxBudget) params.max_budget = maxBudget;
+    if (sort !== 'recommended') params.ordering = sort === 'budget' ? '-budget' : '-created_at';
+
+    getProjects(params)
       .then((r) => setProjects(r.data.results || r.data))
       .catch(() => setProjects([]))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchProjects(); }, []);
+  useEffect(() => { fetchProjects(); }, [sort]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -62,25 +71,31 @@ export default function BrowsePage() {
             <SlidersHorizontal size={18} className="text-muted" />
           </div>
           <div className="card" style={{ padding: 20 }}>
-            <div className="mb-6">
-              <h4 className="font-semibold mb-3">Project Type</h4>
-              <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> Hourly Projects</label>
-              <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" defaultChecked /> Fixed Price</label>
-            </div>
-            <div className="divider" style={{ margin: '16px 0' }} />
-            <div className="mb-6">
-              <h4 className="font-semibold mb-3">Budget (₹)</h4>
-              <div className="flex gap-2">
-                <input className="form-input" placeholder="Min" style={{ padding: '6px 10px' }} />
-                <input className="form-input" placeholder="Max" style={{ padding: '6px 10px' }} />
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              fetchProjects();
+            }}>
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">Project Type</h4>
+                <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> Hourly Projects</label>
+                <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" defaultChecked /> Fixed Price</label>
               </div>
-            </div>
-            <div className="divider" style={{ margin: '16px 0' }} />
-            <div>
-              <h4 className="font-semibold mb-3">Client History</h4>
-              <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> 10+ Hires</label>
-              <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> Info Verified</label>
-            </div>
+              <div className="divider" style={{ margin: '16px 0' }} />
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">Budget (₹)</h4>
+                <div className="flex gap-2">
+                  <input type="number" className="form-input" placeholder="Min" style={{ padding: '6px 10px' }} value={minBudget} onChange={(e) => setMinBudget(e.target.value)} />
+                  <input type="number" className="form-input" placeholder="Max" style={{ padding: '6px 10px' }} value={maxBudget} onChange={(e) => setMaxBudget(e.target.value)} />
+                </div>
+              </div>
+              <div className="divider" style={{ margin: '16px 0' }} />
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">Client History</h4>
+                <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> 10+ Hires</label>
+                <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> Info Verified</label>
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '10px' }}>Apply Filters</button>
+            </form>
           </div>
         </aside>
 
@@ -88,10 +103,15 @@ export default function BrowsePage() {
         <main style={{ flex: 1 }}>
           <div className="mb-4 flex justify-between items-center">
             <span className="text-muted font-semibold">{projects.length} services available</span>
-            <select className="form-select" style={{ width: 140, padding: '6px 10px' }}>
-              <option>Recommended</option>
-              <option>Newest Arrivals</option>
-              <option>Highest Budget</option>
+            <select 
+              className="form-select" 
+              style={{ width: 140, padding: '6px 10px' }}
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="recommended">Recommended</option>
+              <option value="newest">Newest Arrivals</option>
+              <option value="budget">Highest Budget</option>
             </select>
           </div>
 
