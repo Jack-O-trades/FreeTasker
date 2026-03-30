@@ -97,7 +97,7 @@ export default function BrowsePage() {
                   <input type="number" className="form-input" placeholder={t('browse.max')} style={{ padding: '6px 10px' }} value={maxBudget} onChange={(e) => setMaxBudget(e.target.value)} onKeyDown={handleKeyDown} />
                 </div>
               </div>
-              <div className="divider" style={{ margin: '16px 0' }}
+              <div className="divider" style={{ margin: '16px 0' }}></div>
               <div className="mb-6">
                 <h4 className="font-semibold mb-3 text-dark-theme">{t('browse.client_history')}</h4>
                 <label className="flex items-center gap-2 mb-2 text-sm text-secondary"><input type="checkbox" /> {t('browse.ten_hires')}</label>
