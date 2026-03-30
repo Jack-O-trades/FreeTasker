@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   getProfanityReports,
   actionProfanityReport,
@@ -8,12 +9,6 @@ import {
   banUser,
 } from '../api';
 import { ShieldAlert, Flag, Users, CheckCircle, AlertTriangle, XCircle, Bot } from 'lucide-react';
-
-const tabs = [
-  { id: 'profanity', label: 'Profanity Filter', icon: <Bot size={18} /> },
-  { id: 'reports', label: 'User Reports', icon: <Flag size={18} /> },
-  { id: 'users', label: 'Manage Users', icon: <Users size={18} /> },
-];
 
 const statusColors = {
   pending: 'warning',
@@ -25,6 +20,7 @@ const statusColors = {
 };
 
 export default function AdminPanel() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState('profanity');
   const [profanity, setProfanity] = useState([]);
   const [reports, setReports] = useState([]);
@@ -32,6 +28,12 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [filter, setFilter] = useState('');
+
+  const tabs = [
+    { id: 'profanity', label: t('admin.tab_profanity'), icon: <Bot size={18} /> },
+    { id: 'reports', label: t('admin.tab_reports'), icon: <Flag size={18} /> },
+    { id: 'users', label: t('admin.tab_users'), icon: <Users size={18} /> },
+  ];
 
   useEffect(() => {
     setLoading(true);
@@ -86,10 +88,10 @@ export default function AdminPanel() {
   return (
     <div className="admin-layout" style={{ background: 'var(--bg-secondary)', minHeight: '100vh', margin: '-40px -24px 0', padding: 0 }}>
       {/* Sidebar */}
-      <div className="admin-sidebar" style={{ background: '#ffffff', minHeight: '100vh', paddingTop: 32 }}>
+      <div className="admin-sidebar" style={{ background: 'var(--bg-card)', minHeight: '100vh', paddingTop: 32, borderRight: '1px solid var(--border)' }}>
         <div style={{ padding: '0 24px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <ShieldAlert size={28} className="text-teal" />
-          <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 22, color: '#111827' }}>Moderation</span>
+          <span className="text-dark-theme" style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: 22 }}>{t('admin.title')}</span>
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -98,8 +100,9 @@ export default function AdminPanel() {
               key={t.id}
               className={`admin-nav-item ${tab === t.id ? 'active' : ''}`}
               onClick={() => setTab(t.id)}
+              style={{ color: tab === t.id ? 'var(--accent-teal)' : 'var(--text-muted)' }}
             >
-              <span style={{ color: tab === t.id ? 'var(--accent-teal)' : 'var(--text-muted)' }}>{t.icon}</span>
+              <span>{t.icon}</span>
               {t.label}
             </div>
           ))}
@@ -111,50 +114,50 @@ export default function AdminPanel() {
         {/* Profanity Reports Tab */}
         {tab === 'profanity' && (
           <>
-            <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-sm" style={{ background: 'white', padding: 24, borderRadius: 'var(--radius-md)' }}>
+            <div className="flex justify-between items-center mb-8 bg-card p-6 rounded-lg shadow-sm" style={{ padding: 24, borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
               <div>
-                <h1 className="page-title" style={{ fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 }}><Bot size={28} className="text-purple" /> Auto-Flagged Content</h1>
-                <p className="page-subtitle">AI bot flags from chat, projects, and proposals.</p>
+                <h1 className="page-title text-dark-theme" style={{ fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 }}><Bot size={28} className="text-purple" /> {t('admin.profanity_title')}</h1>
+                <p className="page-subtitle">{t('admin.profanity_subtitle')}</p>
               </div>
-              <select className="form-select" style={{ width: 180, background: '#f9fafb' }} value={filter} onChange={(e) => setFilter(e.target.value)}>
-                <option value="">All Statuses</option>
-                <option value="pending">Needs Review (Pending)</option>
-                <option value="warned">Warned</option>
-                <option value="banned">Banned</option>
-                <option value="dismissed">Dismissed</option>
+              <select className="form-select" style={{ width: 220, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)' }} value={filter} onChange={(e) => setFilter(e.target.value)}>
+                <option value="">{t('admin.all_statuses')}</option>
+                <option value="pending">{t('admin.needs_review')}</option>
+                <option value="warned">{t('admin.warned')}</option>
+                <option value="banned">{t('admin.banned')}</option>
+                <option value="dismissed">{t('admin.dismissed')}</option>
               </select>
             </div>
 
             {loading ? <div className="spinner" /> : profanity.length === 0 ? (
               <div className="empty-state">
                 <CheckCircle size={48} className="text-success mx-auto mb-4" />
-                <h3>No flagged content</h3>
-                <p>The platform is clean and safe!</p>
+                <h3 className="text-dark-theme">{t('admin.no_flagged')}</h3>
+                <p>{t('admin.clean_safe')}</p>
               </div>
             ) : (
-              <div className="table-wrapper">
+              <div className="table-wrapper" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
                 <table>
                   <thead>
                     <tr>
-                      <th>User</th>
-                      <th>Source</th>
-                      <th>Content Snippet</th>
-                      <th>Flagged Words</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
+                      <th>{t('admin.table.user')}</th>
+                      <th>{t('admin.table.source')}</th>
+                      <th>{t('admin.table.content')}</th>
+                      <th>{t('admin.table.flags')}</th>
+                      <th>{t('admin.table.status')}</th>
+                      <th>{t('admin.table.date')}</th>
+                      <th>{t('admin.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {profanity.map((r) => (
-                      <tr key={r.id}>
+                      <tr key={r.id} style={{ borderBottom: '1px solid var(--border)' }}>
                         <td>
-                          <div className="font-semibold">{r.user_email}</div>
+                          <div className="font-semibold text-dark-theme">{r.user_email}</div>
                           <div className="text-xs text-muted" style={{ textTransform: 'capitalize' }}>{r.user_role}</div>
                         </td>
                         <td><span className="badge badge-purple" style={{ textTransform: 'capitalize' }}>{r.content_type}</span></td>
                         <td style={{ maxWidth: 260 }}>
-                          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '8px 12px', borderRadius: 6, fontSize: 13, color: '#991b1b', fontStyle: 'italic' }}>
+                          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', padding: '8px 12px', borderRadius: 6, fontSize: 13, color: 'var(--text-primary)', fontStyle: 'italic' }}>
                             "{r.content_snippet?.slice(0, 100)}{r.content_snippet?.length > 100 ? '...' : ''}"
                           </div>
                         </td>
@@ -165,7 +168,7 @@ export default function AdminPanel() {
                             ))}
                           </div>
                         </td>
-                        <td><span className={`badge badge-${statusColors[r.status] || 'warning'}`}>{r.status}</span></td>
+                        <td><span className={`badge badge-${statusColors[r.status] || 'warning'}`}>{t(`admin.${r.status}`) || r.status}</span></td>
                         <td className="text-muted text-sm">{new Date(r.created_at).toLocaleDateString()}</td>
                         <td>
                           {r.status === 'pending' ? (
@@ -174,20 +177,20 @@ export default function AdminPanel() {
                                 className="btn btn-warning btn-sm"
                                 disabled={actionLoading === r.id + 'warn'}
                                 onClick={() => handleProfanityAction(r.id, 'warn')}
-                              >Warn</button>
+                              >{t('admin.actions.warn')}</button>
                               <button
                                 className="btn btn-danger btn-sm"
                                 disabled={actionLoading === r.id + 'ban'}
                                 onClick={() => handleProfanityAction(r.id, 'ban')}
-                              >Ban</button>
+                              >{t('admin.actions.ban')}</button>
                               <button
                                 className="btn btn-secondary btn-sm"
                                 disabled={actionLoading === r.id + 'dismiss'}
                                 onClick={() => handleProfanityAction(r.id, 'dismiss')}
-                              >Dismiss</button>
+                              >{t('admin.actions.dismiss')}</button>
                             </div>
                           ) : (
-                            <span className="text-muted text-sm flex items-center gap-1"><CheckCircle size={14} /> Reviewed</span>
+                            <span className="text-muted text-sm flex items-center gap-1"><CheckCircle size={14} /> {t('admin.actions.reviewed')}</span>
                           )}
                         </td>
                       </tr>
@@ -202,40 +205,40 @@ export default function AdminPanel() {
         {/* User Reports Tab */}
         {tab === 'reports' && (
           <>
-            <div className="mb-8" style={{ background: 'white', padding: 24, borderRadius: 'var(--radius-md)' }}>
-              <h1 className="page-title" style={{ fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 }}><Flag size={28} className="text-warning" /> User Reports</h1>
-              <p className="page-subtitle">Reports filed by users against other users.</p>
+            <div className="mb-8" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', padding: 24, borderRadius: 'var(--radius-md)' }}>
+              <h1 className="page-title text-dark-theme" style={{ fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 }}><Flag size={28} className="text-warning" /> {t('admin.reports_title')}</h1>
+              <p className="page-subtitle">{t('admin.reports_subtitle')}</p>
             </div>
             {loading ? <div className="spinner" /> : reports.length === 0 ? (
-              <div className="empty-state"><CheckCircle size={48} className="text-success mx-auto mb-4" /><h3>No active reports</h3></div>
+              <div className="empty-state"><CheckCircle size={48} className="text-success mx-auto mb-4" /><h3 className="text-dark-theme">{t('admin.tab_reports')}</h3></div>
             ) : (
-              <div className="table-wrapper">
+              <div className="table-wrapper" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
                 <table>
                   <thead>
                     <tr>
-                      <th>Reporter</th>
-                      <th>Reported User</th>
-                      <th>Reason</th>
-                      <th>Description</th>
-                      <th>Status</th>
-                      <th>Actions</th>
+                      <th>{t('admin.table.reporter')}</th>
+                      <th>{t('admin.table.reported')}</th>
+                      <th>{t('admin.table.reason')}</th>
+                      <th>{t('admin.table.description')}</th>
+                      <th>{t('admin.table.status')}</th>
+                      <th>{t('admin.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {reports.map((r) => (
-                      <tr key={r.id}>
-                        <td className="font-semibold">{r.reporter_email}</td>
-                        <td className="font-semibold">{r.reported_user_email}</td>
+                      <tr key={r.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td className="font-semibold text-dark-theme">{r.reporter_email}</td>
+                        <td className="font-semibold text-dark-theme">{r.reported_user_email}</td>
                         <td><span className="badge badge-warning">{r.reason}</span></td>
-                        <td style={{ maxWidth: 240, fontSize: 14 }}>{r.description}</td>
-                        <td><span className={`badge badge-${statusColors[r.status] || 'warning'}`}>{r.status}</span></td>
+                        <td className="text-primary-theme" style={{ maxWidth: 240, fontSize: 14 }}>{r.description}</td>
+                        <td><span className={`badge badge-${statusColors[r.status] || 'warning'}`}>{t(`admin.${r.status}`) || r.status}</span></td>
                         <td>
                           {r.status === 'pending' ? (
                             <div style={{ display: 'flex', gap: 6 }}>
-                              <button className="btn btn-success btn-sm" onClick={() => handleReportAction(r.id, 'resolve')}>Resolve</button>
-                              <button className="btn btn-secondary btn-sm" onClick={() => handleReportAction(r.id, 'dismiss')}>Dismiss</button>
+                              <button className="btn btn-success btn-sm" onClick={() => handleReportAction(r.id, 'resolve')}>{t('admin.actions.resolve')}</button>
+                              <button className="btn btn-secondary btn-sm" onClick={() => handleReportAction(r.id, 'dismiss')}>{t('admin.actions.dismiss')}</button>
                             </div>
-                          ) : <span className="text-muted text-sm">Reviewed</span>}
+                          ) : <span className="text-muted text-sm">{t('admin.actions.reviewed')}</span>}
                         </td>
                       </tr>
                     ))}
@@ -249,40 +252,40 @@ export default function AdminPanel() {
         {/* Users Tab */}
         {tab === 'users' && (
           <>
-            <div className="mb-8" style={{ background: 'white', padding: 24, borderRadius: 'var(--radius-md)' }}>
-              <h1 className="page-title" style={{ fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 }}><Users size={28} className="text-primary" /> User Directory</h1>
-              <p className="page-subtitle">View and moderate all registered platform users.</p>
+            <div className="mb-8" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', padding: 24, borderRadius: 'var(--radius-md)' }}>
+              <h1 className="page-title text-dark-theme" style={{ fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 }}><Users size={28} className="text-primary" /> {t('admin.users_title')}</h1>
+              <p className="page-subtitle">{t('admin.users_subtitle')}</p>
             </div>
             {loading ? <div className="spinner" /> : (
-              <div className="table-wrapper">
+              <div className="table-wrapper" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
                 <table>
                   <thead>
                     <tr>
-                      <th>User</th>
-                      <th>Role</th>
-                      <th>Warnings</th>
-                      <th>Status</th>
-                      <th>Joined</th>
-                      <th>Actions</th>
+                      <th>{t('admin.table.user')}</th>
+                      <th>{t('admin.table.role')}</th>
+                      <th>{t('admin.table.warnings')}</th>
+                      <th>{t('admin.table.status')}</th>
+                      <th>{t('admin.table.joined')}</th>
+                      <th>{t('admin.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((u) => (
-                      <tr key={u.id}>
+                      <tr key={u.id} style={{ borderBottom: '1px solid var(--border)' }}>
                         <td>
-                          <div className="font-semibold">{u.email}</div>
+                          <div className="font-semibold text-dark-theme">{u.email}</div>
                           <div className="text-xs text-muted">@{u.username}</div>
                         </td>
                         <td><span className={`badge badge-${u.role === 'admin' ? 'purple' : u.role === 'client' ? 'info' : 'teal'}`}>{u.role}</span></td>
                         <td>
                           {u.warnings_count > 0
-                            ? <span className="badge badge-warning flex items-center gap-1 w-fit"><AlertTriangle size={12} /> {u.warnings_count} Warnings</span>
+                            ? <span className="badge badge-warning flex items-center gap-1 w-fit"><AlertTriangle size={12} /> {u.warnings_count} {t('admin.table.warnings')}</span>
                             : <span className="text-muted text-sm">0</span>
                           }
                         </td>
                         <td>
                           {u.is_banned
-                            ? <span className="badge badge-danger">Banned</span>
+                            ? <span className="badge badge-danger">{t('admin.banned')}</span>
                             : <span className="badge badge-success">Active</span>
                           }
                         </td>
@@ -294,13 +297,13 @@ export default function AdminPanel() {
                                 className="btn btn-outline btn-sm"
                                 disabled={actionLoading === u.id + 'unban'}
                                 onClick={() => handleBanUser(u.id, 'unban')}
-                              >Unban User</button>
+                              >{t('admin.actions.unban')}</button>
                             ) : (
                               <button
                                 className="btn btn-danger btn-sm"
                                 disabled={actionLoading === u.id + 'ban'}
                                 onClick={() => handleBanUser(u.id, 'ban')}
-                              >Ban User</button>
+                              >{t('admin.actions.ban_user')}</button>
                             )
                           )}
                         </td>
@@ -316,3 +319,4 @@ export default function AdminPanel() {
     </div>
   );
 }
+

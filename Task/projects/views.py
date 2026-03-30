@@ -117,28 +117,51 @@ class RecommendedProjectsView(generics.ListAPIView):
     GET /api/projects/recommended/
     """
     serializer_class = ProjectListSerializer
-    permission_classes = [permissions.IsAuthenticated, IsFreelancer]
+    permission_classes = [permissions.IsAuthenticated, IsFreelancer, IsNotBanned]
 
     def list(self, request, *args, **kwargs):
         user = request.user
         try:
-            my_skills = set(s.lower().strip() for s in user.freelancer_profile.skills)
+            profile = user.freelancer_profile
+            # Handle both empty list and None cases
+            my_skills = [s.lower().strip() for s in (profile.skills or []) if s]
         except Exception:
-            my_skills = set()
+            my_skills = []
 
         projects = Project.objects.filter(status=Project.Status.OPEN).select_related('client')
         
+        if not my_skills:
+            # If no skills set, just return latest projects
+            serializer = self.get_serializer(projects[:20], many=True)
+            return Response(serializer.data)
+
         scored_projects = []
         for p in projects:
-            req_skills = set(s.lower().strip() for s in (p.required_skills or []))
-            overlap = len(my_skills.intersection(req_skills))
-            scored_projects.append((overlap, p.created_at, p))
+            req_skills_raw = p.required_skills or []
+            if isinstance(req_skills_raw, str):
+                req_skills_raw = [s.strip() for s in req_skills_raw.split(',')]
             
-        # Sort descending by overlap count, then descending by created_at
+            req_skills = [s.lower().strip() for s in req_skills_raw if s]
+            
+            project_score = 0
+            for ms in my_skills:
+                match_found = False
+                for rs in req_skills:
+                    if ms in rs or rs in ms:
+                        match_found = True
+                        break
+                if match_found:
+                    project_score += 1
+            
+            scored_projects.append((project_score, p.created_at, p))
+            
         scored_projects.sort(key=lambda x: (x[0], x[1]), reverse=True)
         
-        # We return all projects, but strongly guarantee matched projects are at the top.
-        sorted_projects = [sp[2] for sp in scored_projects]
+        # Take up to 50 items
+        results_limit = 50
+        sorted_projects = []
+        for i in range(min(len(scored_projects), results_limit)):
+            sorted_projects.append(scored_projects[i][2])
         
         serializer = self.get_serializer(sorted_projects, many=True)
         return Response(serializer.data)

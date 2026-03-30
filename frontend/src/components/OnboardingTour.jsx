@@ -19,26 +19,27 @@ export default function OnboardingTour() {
       return;
     }
 
-    if (user.role === 'client') {
-      setSteps([
-        { target: 'body', content: t('tour.client_step1'), placement: 'center' },
-        { target: '.tour-post-project', content: t('tour.client_step2'), placement: 'bottom' },
-        { target: '.tour-nav-dashboard', content: t('tour.client_step3'), placement: 'bottom' },
-        { target: '.tour-nav-chat', content: t('tour.client_step4'), placement: 'bottom' }
-      ]);
-    } else if (user.role === 'freelancer') {
-      setSteps([
-        { target: 'body', content: t('tour.freelancer_step1'), placement: 'center' },
-        { target: '.tour-nav-dashboard', content: t('tour.freelancer_step2'), placement: 'bottom' },
-        { target: '.tour-nav-browse', content: t('tour.freelancer_step3'), placement: 'bottom' },
-        { target: '.tour-nav-chat', content: t('tour.freelancer_step4'), placement: 'bottom' }
-      ]);
-    }
+    const allSteps = user.role === 'client' ? [
+      { target: 'body', content: t('tour.client_step1'), placement: 'center' },
+      { target: '.tour-post-project', content: t('tour.client_step2'), placement: 'bottom' },
+      { target: '.tour-nav-dashboard', content: t('tour.client_step3'), placement: 'bottom' },
+      { target: '.tour-nav-chat', content: t('tour.client_step4'), placement: 'bottom' }
+    ] : [
+      { target: 'body', content: t('tour.freelancer_step1'), placement: 'center' },
+      { target: '.tour-nav-dashboard', content: t('tour.freelancer_step2'), placement: 'bottom' },
+      { target: '.tour-nav-browse', content: t('tour.freelancer_step3'), placement: 'bottom' },
+      { target: '.tour-nav-chat', content: t('tour.freelancer_step4'), placement: 'bottom' }
+    ];
+
+    // Filter to ensure target is either 'body' or exists in the current DOM
+    const validSteps = allSteps.filter(s => s.target === 'body' || document.querySelector(s.target));
+    setSteps(validSteps);
 
     const hasSeenTour = localStorage.getItem(`tour_seen_${user.id}`);
-    if (!hasSeenTour) {
+    if (!hasSeenTour && location.pathname === '/dashboard') {
       localStorage.setItem(`tour_seen_${user.id}`, 'true');
-      setTimeout(() => setRun(true), 1200);
+      const timer = setTimeout(() => setRun(true), 1200);
+      return () => clearTimeout(timer);
     }
   }, [user, location.pathname, t, i18n.language]);
 

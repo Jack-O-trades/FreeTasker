@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getChatRooms, getChatMessages } from '../api';
 import { useAuth } from '../AuthContext';
 import { Send, Search, Bot, MessageSquare } from 'lucide-react';
 const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8001/ws/chat';
 
 export default function ChatPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { roomId: paramRoomId } = useParams();
 
@@ -102,19 +104,19 @@ export default function ChatPage() {
     <div style={{ padding: '24px', maxWidth: 1400, margin: '0 auto', height: 'calc(100vh - 70px)' }}>
       <div className="chat-container">
         {/* Sidebar */}
-        <div className="chat-sidebar" style={{ borderRight: '1px solid var(--border)', background: '#ffffff', display: 'flex', flexDirection: 'column' }}>
+        <div className="chat-sidebar" style={{ borderRight: '1px solid var(--border)', background: 'var(--bg-card)', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '24px 20px 16px', borderBottom: '1px solid var(--border)' }}>
-            <h2 style={{ fontSize: 20, marginBottom: 16 }}>Messages</h2>
+            <h2 className="text-dark-theme" style={{ fontSize: 20, marginBottom: 16 }}>{t('chat.messages_title')}</h2>
             <div style={{ position: 'relative' }}>
               <Search size={16} className="text-muted" style={{ position: 'absolute', top: 10, left: 12 }} />
-              <input className="form-input" style={{ paddingLeft: 36, background: '#f9fafb', border: 'none' }} placeholder="Search messages" />
+              <input className="form-input" style={{ paddingLeft: 36, background: 'var(--bg-secondary)', border: 'none' }} placeholder={t('chat.search_placeholder')} />
             </div>
           </div>
           
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {rooms.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
-                No active conversations yet.
+                {t('chat.no_conversations')}
               </div>
             ) : (
               rooms.map((room) => (
@@ -124,13 +126,13 @@ export default function ChatPage() {
                   style={{
                     padding: '16px 20px',
                     cursor: 'pointer',
-                    background: activeRoom?.id === room.id ? '#f0fdf4' : 'transparent',
+                    background: activeRoom?.id === room.id ? 'var(--accent-teal-dim)' : 'transparent',
                     borderLeft: activeRoom?.id === room.id ? '4px solid var(--accent-teal)' : '4px solid transparent',
                     borderBottom: '1px solid var(--border)',
                     transition: 'var(--transition)',
                   }}
                 >
-                  <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4, color: activeRoom?.id === room.id ? '#065f46' : '#111827' }}>{getRoomLabel(room)}</div>
+                  <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4, color: activeRoom?.id === room.id ? 'var(--accent-teal)' : 'var(--text-primary)' }}>{getRoomLabel(room)}</div>
                   <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{getOtherName(room)}</div>
                 </div>
               ))
@@ -141,17 +143,17 @@ export default function ChatPage() {
         {/* Main chat */}
         {activeRoom ? (
           <>
-          <div className="chat-main" style={{ background: '#f9fafb' }}>
-            <div className="chat-header" style={{ padding: '20px 24px', background: '#ffffff', borderBottom: '1px solid var(--border)' }}>
+          <div className="chat-main" style={{ background: 'var(--bg-secondary)' }}>
+            <div className="chat-header" style={{ padding: '20px 24px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--accent-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 18 }}>
                   {getOtherName(activeRoom).charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: '#111827' }}>{getOtherName(activeRoom)}</div>
+                  <div className="text-dark-theme" style={{ fontWeight: 700, fontSize: 18 }}>{getOtherName(activeRoom)}</div>
                   <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: wsStatus === 'connected' ? 'var(--success)' : 'var(--danger)' }} />
-                    {wsStatus === 'connected' ? 'Online' : 'Disconnected'} • <span className="text-teal font-semibold">{getOtherEmail(activeRoom)}</span> • {getRoomLabel(activeRoom)}
+                    {wsStatus === 'connected' ? t('chat.online') : t('chat.offline')} • <span className="text-teal font-semibold">{getOtherEmail(activeRoom)}</span> • {getRoomLabel(activeRoom)}
                   </div>
                 </div>
               </div>
@@ -169,7 +171,7 @@ export default function ChatPage() {
                         </div>
                       )}
                       <div style={{ wordBreak: 'break-word' }}>{msg.message || msg.content}</div>
-                      {msg.flagged && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}><Bot size={12} /> Flagged by moderation bot</div>}
+                      {msg.flagged && <div style={{ fontSize: 11, color: 'var(--danger)', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}><Bot size={12} /> {t('chat.flagged_by_bot')}</div>}
                       <div className="msg-meta" style={{ textAlign: isMine ? 'right' : 'left' }}>{msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</div>
                     </div>
                   </div>
@@ -180,15 +182,15 @@ export default function ChatPage() {
 
             {warn && <div className="msg-warn" style={{ margin: '0 24px 16px', display: 'flex', alignItems: 'center', gap: 8 }}><Bot size={16} /> {warn}</div>}
 
-            <div className="chat-input-area" style={{ padding: '20px 24px', background: '#ffffff', borderTop: '1px solid var(--border)' }}>
+            <div className="chat-input-area" style={{ padding: '20px 24px', background: 'var(--bg-card)', borderTop: '1px solid var(--border)' }}>
               <textarea
                 className="chat-input"
                 rows={1}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a message..."
-                style={{ borderRadius: 24, padding: '12px 20px', background: '#f3f4f6', border: 'none' }}
+                placeholder={t('chat.type_placeholder')}
+                style={{ borderRadius: 24, padding: '12px 20px', background: 'var(--bg-secondary)', border: 'none', color: 'var(--text-primary)' }}
               />
               <button 
                 className="btn btn-primary" 
@@ -202,50 +204,50 @@ export default function ChatPage() {
           </div>
           
           {/* Third Column: Profile Widget */}
-          <div className="chat-profile" style={{ width: 320, borderLeft: '1px solid var(--border)', background: '#ffffff', padding: '32px 24px', overflowY: 'auto' }}>
+          <div className="chat-profile" style={{ width: 320, borderLeft: '1px solid var(--border)', background: 'var(--bg-card)', padding: '32px 24px', overflowY: 'auto' }}>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
               <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--accent-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 32, margin: '0 auto 16px' }}>
                 {getOtherName(activeRoom).charAt(0).toUpperCase()}
               </div>
-              <h3 style={{ fontSize: 20, marginBottom: 4 }}>{getOtherName(activeRoom)}</h3>
+              <h3 className="text-dark-theme" style={{ fontSize: 20, marginBottom: 4 }}>{getOtherName(activeRoom)}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                 <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: wsStatus === 'connected' ? 'var(--success)' : 'var(--danger)' }} />
-                {wsStatus === 'connected' ? 'Online Now' : 'Offline'}
+                {wsStatus === 'connected' ? t('chat.online_now') : t('chat.offline')}
               </p>
             </div>
             
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24 }}>
-              <h4 style={{ fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: 0.5, marginBottom: 16 }}>Profile Details</h4>
+              <h4 className="text-muted" style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 }}>{t('chat.profile_details')}</h4>
               
               {(() => {
                 const isClient = user?.role === 'client';
                 const pType = isClient ? 'freelancer' : 'client';
-                const data = isClient ? activeRoom.freelancer_profile : activeRoom.client_profile;
+                const profileData = isClient ? activeRoom.freelancer_profile : activeRoom.client_profile;
                 
-                if (!data) return <p className="text-muted text-sm">Profile incomplete.</p>;
+                if (!profileData) return <p className="text-muted text-sm">{t('chat.profile_incomplete')}</p>;
 
                 if (pType === 'freelancer') {
                   return (
                     <div className="flex flex-col gap-4">
                       <div>
-                        <div className="text-xs text-muted mb-1">Hourly Rate</div>
-                        <div className="font-semibold text-primary">₹{data.hourly_rate || 0}/hr</div>
+                        <div className="text-xs text-muted mb-1">{t('chat.hourly_rate')}</div>
+                        <div className="font-semibold text-primary">₹{profileData.hourly_rate || 0}/hr</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">Platform Rating</div>
+                        <div className="text-xs text-muted mb-1">{t('chat.platform_rating')}</div>
                         <div className="font-semibold text-primary" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          ⭐ {data.avg_rating || 'N/A'}
+                          ⭐ {profileData.avg_rating || t('reputation.na')}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">Completed Projects</div>
-                        <div className="font-semibold text-primary">{data.completed_projects || 0}</div>
+                        <div className="text-xs text-muted mb-1">{t('chat.completed_projects')}</div>
+                        <div className="font-semibold text-primary">{profileData.completed_projects || 0}</div>
                       </div>
-                      {data.skills && data.skills.length > 0 && (
+                      {profileData.skills && profileData.skills.length > 0 && (
                         <div style={{ marginTop: 8 }}>
-                          <div className="text-xs text-muted mb-2">Key Skills</div>
+                          <div className="text-xs text-muted mb-2">{t('chat.key_skills')}</div>
                           <div className="flex flex-wrap gap-2">
-                            {data.skills.map(s => <span key={s} className="tag" style={{ background: '#f3f4f6', color: '#4b5563', padding: '4px 10px', borderRadius: 100, fontSize: 12, border: '1px solid var(--border)' }}>{s}</span>)}
+                             {profileData.skills.map(s => <span key={s} className="tag">{s}</span>)}
                           </div>
                         </div>
                       )}
@@ -255,21 +257,21 @@ export default function ChatPage() {
                   return (
                     <div className="flex flex-col gap-4">
                       <div>
-                        <div className="text-xs text-muted mb-1">Company Name</div>
-                        <div className="font-semibold text-primary">{data.company_name || 'Individual Client'}</div>
+                        <div className="text-xs text-muted mb-1">{t('chat.company_name')}</div>
+                        <div className="font-semibold text-primary">{profileData.company_name || t('chat.individual_client')}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">Verification Status</div>
-                        {data.is_verified ? (
-                          <span className="badge badge-success">Verified Payment</span>
+                        <div className="text-xs text-muted mb-1">{t('chat.verification_status')}</div>
+                        {profileData.is_verified ? (
+                          <span className="badge badge-success">{t('chat.verified_payment')}</span>
                         ) : (
-                          <span className="badge badge-warning">Unverified</span>
+                          <span className="badge badge-warning">{t('chat.unverified')}</span>
                         )}
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">Client Rating</div>
+                        <div className="text-xs text-muted mb-1">{t('chat.client_rating')}</div>
                         <div className="font-semibold text-primary" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          ⭐ {data.avg_rating || 'N/A'} <span className="text-xs font-normal text-muted">({data.total_ratings || 0})</span>
+                          ⭐ {profileData.avg_rating || t('reputation.na')} <span className="text-xs font-normal text-muted">({profileData.total_ratings || 0})</span>
                         </div>
                       </div>
                     </div>
@@ -279,18 +281,18 @@ export default function ChatPage() {
             </div>
             
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, marginTop: 24 }}>
-               <h4 style={{ fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: 0.5, marginBottom: 12 }}>Contact & Direct Mail</h4>
+               <h4 className="text-muted" style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>{t('chat.contact_mail')}</h4>
                <p className="text-sm font-semibold" style={{ color: 'var(--accent-teal)', wordBreak: 'break-all' }}>{getOtherEmail(activeRoom)}</p>
             </div>
           </div>
           
         </>
         ) : (
-          <div className="chat-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
+          <div className="chat-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)' }}>
             <div className="empty-state" style={{ background: 'transparent', border: 'none' }}>
-              <MessageSquare size={64} className="text-muted mx-auto mb-6" style={{ opacity: 0.3 }} />
-              <h3 style={{ fontSize: 24, color: '#374151', paddingBottom: 8 }}>Your Messages</h3>
-              <p>Select a conversation from the sidebar to start chatting.</p>
+              <MessageSquare size={64} className="icon mx-auto mb-6" style={{ opacity: 0.3 }} />
+              <h3 className="text-dark-theme" style={{ fontSize: 24, paddingBottom: 8 }}>{t('chat.select_convo_title')}</h3>
+              <p>{t('chat.select_convo_subtitle')}</p>
             </div>
           </div>
         )}
