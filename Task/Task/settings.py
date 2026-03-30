@@ -130,15 +130,23 @@ SIMPLE_JWT = {
 
 # ---------- Channels ----------
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': os.environ.get(
-            'CHANNELS_BACKEND',
-            'channels.layers.InMemoryChannelLayer'
-        ),
-        'CONFIG': {},
+redis_url = os.environ.get('REDIS_URL', '')
+if redis_url:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [redis_url],
+            },
+        }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+            'CONFIG': {},
+        }
+    }
 
 # ---------- CORS ----------
 
