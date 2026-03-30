@@ -204,50 +204,50 @@ export default function ChatPage() {
           </div>
           
           {/* Third Column: Profile Widget */}
-          <div className="chat-profile" style={{ width: 320, borderLeft: '1px solid var(--border)', background: 'var(--bg-card)', padding: '32px 24px', overflowY: 'auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--accent-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 32, margin: '0 auto 16px' }}>
+          <div className="chat-profile" style={{ width: 320, borderLeft: '1px solid var(--border)', background: 'var(--bg-card)', padding: '24px', overflowY: 'auto', display: 'none', '@media (min-width: 1200px)': { display: 'block' } }}>
+            <div style={{ textAlign: 'center', marginBottom: 20 }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--accent-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 32, margin: '0 auto 12px' }}>
                 {getOtherName(activeRoom).charAt(0).toUpperCase()}
               </div>
-              <h3 className="text-dark-theme" style={{ fontSize: 20, marginBottom: 4 }}>{getOtherName(activeRoom)}</h3>
+              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4, color: 'var(--text-primary)' }}>{getOtherName(activeRoom)}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                 <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: wsStatus === 'connected' ? 'var(--success)' : 'var(--danger)' }} />
                 {wsStatus === 'connected' ? t('chat.online_now') : t('chat.offline')}
               </p>
             </div>
             
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24 }}>
-              <h4 className="text-muted" style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 }}>{t('chat.profile_details')}</h4>
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20 }}>
+              <h4 style={{ fontSize: 12, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16, fontWeight: 700 }}>{t('chat.profile_details')}</h4>
               
               {(() => {
                 const isClient = user?.role === 'client';
                 const pType = isClient ? 'freelancer' : 'client';
                 const profileData = isClient ? activeRoom.freelancer_profile : activeRoom.client_profile;
                 
-                if (!profileData) return <p className="text-muted text-sm">{t('chat.profile_incomplete')}</p>;
+                if (!profileData) return <p style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{t('chat.profile_incomplete')}</p>;
 
                 if (pType === 'freelancer') {
                   return (
-                    <div className="flex flex-col gap-4">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div>
-                        <div className="text-xs text-muted mb-1">{t('chat.hourly_rate')}</div>
-                        <div className="font-semibold text-primary">₹{profileData.hourly_rate || 0}/hr</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>{t('chat.hourly_rate')}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 16 }}>₹{profileData.hourly_rate || 0}/hr</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">{t('chat.platform_rating')}</div>
-                        <div className="font-semibold text-primary" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>{t('chat.platform_rating')}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 16 }}>
                           ⭐ {profileData.avg_rating || t('reputation.na')}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">{t('chat.completed_projects')}</div>
-                        <div className="font-semibold text-primary">{profileData.completed_projects || 0}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>{t('chat.completed_projects')}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 16 }}>{profileData.completed_projects || 0}</div>
                       </div>
                       {profileData.skills && profileData.skills.length > 0 && (
                         <div style={{ marginTop: 8 }}>
-                          <div className="text-xs text-muted mb-2">{t('chat.key_skills')}</div>
-                          <div className="flex flex-wrap gap-2">
-                             {profileData.skills.map(s => <span key={s} className="tag">{s}</span>)}
+                          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{t('chat.key_skills')}</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                             {profileData.skills.map(s => <span key={s} style={{ background: 'var(--accent-teal-dim)', color: 'var(--accent-teal)', padding: '4px 8px', borderRadius: 'var(--radius-sm)', fontSize: 12, fontWeight: 600 }}>{s}</span>)}
                           </div>
                         </div>
                       )}
@@ -255,23 +255,23 @@ export default function ChatPage() {
                   );
                 } else {
                   return (
-                    <div className="flex flex-col gap-4">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       <div>
-                        <div className="text-xs text-muted mb-1">{t('chat.company_name')}</div>
-                        <div className="font-semibold text-primary">{profileData.company_name || t('chat.individual_client')}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>{t('chat.company_name')}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>{profileData.company_name || t('chat.individual_client')}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">{t('chat.verification_status')}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>{t('chat.verification_status')}</div>
                         {profileData.is_verified ? (
-                          <span className="badge badge-success">{t('chat.verified_payment')}</span>
+                          <span style={{ background: 'var(--success)', color: 'white', padding: '4px 10px', borderRadius: 'var(--radius-sm)', fontSize: 12, fontWeight: 600, display: 'inline-block' }}>{t('chat.verified_payment')}</span>
                         ) : (
-                          <span className="badge badge-warning">{t('chat.unverified')}</span>
+                          <span style={{ background: 'var(--warning)', color: 'white', padding: '4px 10px', borderRadius: 'var(--radius-sm)', fontSize: 12, fontWeight: 600, display: 'inline-block' }}>{t('chat.unverified')}</span>
                         )}
                       </div>
                       <div>
-                        <div className="text-xs text-muted mb-1">{t('chat.client_rating')}</div>
-                        <div className="font-semibold text-primary" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          ⭐ {profileData.avg_rating || t('reputation.na')} <span className="text-xs font-normal text-muted">({profileData.total_ratings || 0})</span>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>{t('chat.client_rating')}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 14 }}>
+                          ⭐ {profileData.avg_rating || t('reputation.na')} <span style={{ fontSize: 12, fontWeight: 'normal', color: 'var(--text-muted)' }}>({profileData.total_ratings || 0})</span>
                         </div>
                       </div>
                     </div>

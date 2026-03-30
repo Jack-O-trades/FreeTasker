@@ -51,9 +51,9 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         return None
 
     def get_unread_count(self, obj):
-        user = self.context.get('request', {})
-        if hasattr(user, 'user'):
-            user = user.user
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
             return obj.messages.filter(is_read=False).exclude(sender=user).count()
         return 0
 
@@ -62,8 +62,8 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             prof = obj.client.client_profile
             return {
                 "is_verified": prof.is_verified,
-                "avg_rating": prof.avg_rating,
-                "total_ratings": prof.total_ratings,
+                "avg_rating": getattr(obj.freelancer.freelancer_profile, 'avg_rating', 0) if hasattr(obj.freelancer, 'freelancer_profile') else 0,
+                "total_ratings": getattr(obj.freelancer.freelancer_profile, 'total_ratings', 0) if hasattr(obj.freelancer, 'freelancer_profile') else 0,
                 "company_name": prof.company_name
             }
         except Exception:
@@ -74,7 +74,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             prof = obj.freelancer.freelancer_profile
             return {
                 "skills": prof.skills,
-                "hourly_rate": prof.hourly_rate,
+                "hourly_rate": str(prof.hourly_rate) if prof.hourly_rate else "0",
                 "avg_rating": prof.avg_rating,
                 "completed_projects": prof.completed_projects
             }

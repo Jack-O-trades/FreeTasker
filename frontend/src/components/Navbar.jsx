@@ -94,10 +94,10 @@ export default function Navbar() {
         {user ? (
           <>
             <div className="tour-nav-profile" style={{ textAlign: 'right', display: 'flex', flexDirection: 'column' }}>
-              <span className="text-sm font-semibold" style={{ color: '#111827' }}>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {user.first_name || user.username}
               </span>
-              <span className="text-xs text-muted" style={{ textTransform: 'capitalize' }}>
+              <span className="text-xs text-muted" style={{ textTransform: 'capitalize', color: 'var(--text-secondary)' }}>
                 {user.role}
               </span>
             </div>

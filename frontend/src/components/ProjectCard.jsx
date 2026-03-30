@@ -24,7 +24,7 @@ export default function ProjectCard({ project }) {
           </span>
         </div>
         
-        <h3 className="mb-2" style={{ fontSize: '18px', color: '#111827', fontWeight: 700, lineHeight: 1.4 }}>
+        <h3 className="mb-2" style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: 700, lineHeight: 1.4 }}>
           {project.title || 'Project Title Placeholder'}
         </h3>
         
