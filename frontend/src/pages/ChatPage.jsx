@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getChatRooms, getChatMessages } from '../api';
 import { useAuth } from '../AuthContext';
 import { Send, Search, Bot, MessageSquare } from 'lucide-react';
-const WS_BASE = 'ws://127.0.0.1:8001/ws/chat';
+const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8001/ws/chat';
 
 export default function ChatPage() {
   const { user } = useAuth();

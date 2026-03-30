@@ -143,9 +143,8 @@ CHANNEL_LAYERS = {
 # ---------- CORS ----------
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    'CORS_ALLOWED_ORIGINS', ''
-).split(',') if not DEBUG else []
+cors_env = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+CORS_ALLOWED_ORIGINS = cors_env.split(',') if cors_env and not DEBUG else []
 
 # ---------- Internationalization ----------
 
