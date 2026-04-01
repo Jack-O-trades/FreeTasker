@@ -31,7 +31,7 @@ export default function LandingPage() {
             {t('landing.hero_subtitle')}
           </p>
           
-          <div className="hero-search mb-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+          <div className="hero-search">
             <input 
               type="text" 
               placeholder={t('landing.search_placeholder')} 
@@ -40,27 +40,16 @@ export default function LandingPage() {
             <button className="btn-primary">{t('landing.search_btn')}</button>
           </div>
           
-          <div className="flex items-center gap-3 flex-wrap text-sm" style={{ color: 'var(--text-muted)' }}>
-            <span className="font-semibold">{t('landing.popular')}</span>
-            <span className="tag" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderColor: 'var(--border)' }}>Website Design</span>
-            <span className="tag" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderColor: 'var(--border)' }}>WordPress</span>
-            <span className="tag" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderColor: 'var(--border)' }}>Logo Design</span>
-            <span className="tag" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderColor: 'var(--border)' }}>AI Services</span>
+          <div className="hero-tags">
+            <span className="font-semibold" style={{ color: 'var(--text-muted)' }}>{t('landing.popular')}</span>
+            <span className="tag">Website Design</span>
+            <span className="tag">WordPress</span>
+            <span className="tag">Logo Design</span>
+            <span className="tag">AI Services</span>
           </div>
         </div>
       </section>
 
-      {/* Trusted By Banner */}
-      <section style={{ padding: '24px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', overflowX: 'auto' }}>
-        <div className="flex justify-center items-center gap-8 flex-wrap" style={{ opacity: 0.6, minWidth: 'max-content', paddingX: 24 }}>
-          <span className="font-bold text-muted text-lg" style={{ whiteSpace: 'nowrap' }}>{t('landing.trusted_by')}</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>Google</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>Meta</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>Netflix</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>P&G</span>
-          <span className="font-bold text-dark-theme" style={{ fontSize: 24, letterSpacing: -1, whiteSpace: 'nowrap' }}>PayPal</span>
-        </div>
-      </section>
 
       {/* Categories */}
       <section style={{ padding: '60px 24px' }} className="page">

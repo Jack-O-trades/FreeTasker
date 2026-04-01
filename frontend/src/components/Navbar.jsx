@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useTheme } from '../ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { Search, Menu, Moon, Sun, Globe } from 'lucide-react';
+import { Search, Menu, Moon, Sun, Globe, X } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -39,7 +39,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="navbar-nav hidden-mobile">
+      <div className="navbar-nav">
         {user ? (
           <>
             {user.role === 'client' && (

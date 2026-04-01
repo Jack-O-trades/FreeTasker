@@ -274,6 +274,23 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
 }
 .tag:hover { background: #e5e7eb; }
 
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--text-muted);
+}
+
+.hero-tags .tag {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border);
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
 [data-theme='dark'] .tag {
   background: #374151;
   border-color: #4b5563;
@@ -330,28 +347,82 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
 }
 .navbar-brand span { color: var(--accent-teal); }
 
-.navbar-nav { display: flex; align-items: center; gap: 20px; }
-.nav-link {
+.navbar-nav { display: flex; align-items: center; gap: 24px; }
+.navbar-nav a,
+.navbar-nav .nav-link {
   font-size: 15px;
   font-weight: 600;
   color: var(--text-secondary);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
   transition: var(--transition);
 }
-.nav-link:hover, .nav-link.active { color: var(--accent-teal); }
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--accent-teal);
+  background: var(--bg-secondary);
+}
 .navbar-actions { display: flex; align-items: center; gap: 16px; }
+
+@media (max-width: 1024px) {
+  .navbar-nav { gap: 18px; }
+}
+
+.navbar-nav { display: flex; align-items: center; gap: 24px; }
+.navbar-nav a,
+.navbar-nav .nav-link {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--accent-teal);
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 1024px) {
+  .navbar-nav { gap: 18px; }
+}
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 0 16px;
-    height: 60px;
+    padding: 0 12px;
+    height: auto;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    overflow-x: auto;
   }
   .navbar-brand {
     font-size: 18px;
+    margin-right: 8px;
   }
-  .navbar-nav { gap: 12px; font-size: 14px; }
-  .navbar-actions { gap: 12px; }
+  .navbar .flex {
+    flex: 1;
+    min-width: 0;
+  }
+  .navbar-nav { display: none; }
+  .navbar-actions {
+    gap: 8px;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .navbar-actions .btn,
+  .navbar-actions .nav-link {
+    font-size: 14px;
+  }
   .tour-nav-profile { display: none; }
 }
+
+
 
 
 /* ---------- Page Layout ---------- */
@@ -418,12 +489,31 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
     grid-template-columns: 1fr; 
     gap: 12px;
   }
+  .page {
+    padding: 24px 16px;
+  }
+  .card, .card-small, .project-card {
+    width: 100% !important;
+  }
+  .browse-sidebar, .chat-sidebar, .admin-sidebar {
+    width: 100% !important;
+    position: relative !important;
+    border-right: none !important;
+    margin-bottom: 16px;
+  }
+  .sidebar-content, .details-sidebar, .sidebar-actions {
+    width: 100% !important;
+  }
+  .table-wrapper { overflow-x: auto; }
 }
 
 @media (max-width: 480px) {
   .grid-2, .grid-3, .grid-4 {
     gap: 8px;
   }
+  .page { padding: 16px 10px; }
+  .hero { padding: 24px 12px; }
+  .hero-title { font-size: clamp(22px, 8vw, 30px); }
 }
 
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
@@ -443,11 +533,9 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
 
 /* ---------- Visibility Utilities ---------- */
 .hidden-mobile { display: block; }
-.visible-mobile { display: none; }
 
 @media (max-width: 768px) {
   .hidden-mobile { display: none !important; }
-  .visible-mobile { display: block !important; }
 }
 
 /* ---------- Spacing ---------- */
@@ -538,8 +626,9 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 700; co
   background: white;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  max-width: 500px;
+  max-width: 520px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-bottom: 16px;
 }
 .hero-search input {
   flex: 1;
